@@ -17,27 +17,27 @@
     <style>
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
-        /* 3. إعدادات الخلفية لمنع الزوم الزائد */
+        /* 2. إعدادات الخلفية (الحل النهائي للزوم والتوسع) */
         #fixed-background {
             position: fixed; 
             top: 0; 
             left: 0; 
             width: 100%; 
-            /* تم إرجاعها لـ 100% لتقليل الزوم، والجافاسكريبت سيثبتها */
-            height: 100%; 
+            /* 100lvh تعني أطول ارتفاع ممكن للشاشة (تتجاهل شريط العنوان) */
+            height: 100vh; /* للمتصفحات القديمة */
+            height: 100lvh; /* للمتصفحات الحديثة (الحل السحري) */
             background-image: url('https://raw.githubusercontent.com/shehabt1000-boop/Moussa/3c5822b0deb99157562300b4aefb8ce499b83603/IMG-20251124-WA0051.jpg');
             background-size: cover;
-            /* التركيز على أعلى الصورة (الوجوه) بدلاً من المنتصف */
-            background-position: center top; 
+            background-position: center top; /* التركيز على الجزء العلوي */
             z-index: -10;
             background-repeat: no-repeat;
             pointer-events: none;
         }
 
-        /* 1. تخفيف الظل جداً (0.2) */
+        /* 1. الظل بنسبة 0.3 */
         #fixed-background::after {
             content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.2); /* ظل خفيف جداً */
+            background: rgba(0, 0, 0, 0.3); /* تم الضبط */
         }
 
         body {
@@ -65,7 +65,7 @@
         
         #login-screen::before {
             content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.3);
+            background: rgba(0, 0, 0, 0.4);
             z-index: -1;
         }
 
@@ -101,7 +101,6 @@
         }
         .input-glass:focus { border-color: #fb7185; background: rgba(255,255,255,0.3); }
         
-        /* تحسين قراءة النصوص (ظل قوي لتعويض الخلفية الفاتحة) */
         h1, h2, p, span, button, div {
             text-shadow: 0 2px 8px rgba(0,0,0,0.8); 
         }
@@ -366,7 +365,7 @@
             </div>
 
             <!-- قسم العداد (2. تم تصغير العرض والحشو بشكل أكبر) -->
-            <section class="w-[90%] max-w-[280px] px-2 mb-10"> <!-- عرض أصغر -->
+            <section class="w-[90%] max-w-[280px] px-2 mb-10"> <!-- عرض مخصص للهاتف -->
                 <div class="glass-card p-2 text-center"> <!-- حشو أقل -->
                     <h3 class="text-base font-bold text-rose-400 mb-2">بداية حكايتنا</h3>
                     <p class="text-[10px] text-gray-300 mb-3 leading-relaxed">
@@ -487,23 +486,6 @@
                     .catch(err => console.log('Service Worker Failed', err));
             });
         }
-
-        // 4. كود تثبيت الخلفية (الحل الجذري لمشكلة التوسع)
-        function setFixedBackgroundHeight() {
-            const bg = document.getElementById('fixed-background');
-            // نثبت الارتفاع بالبكسل بناءً على أول تحميل للصفحة
-            // هذا يمنع الخلفية من التغير عند اختفاء شريط العنوان
-            bg.style.height = window.innerHeight + 'px';
-        }
-        
-        // استدعاء الدالة عند التحميل فقط
-        window.addEventListener('load', setFixedBackgroundHeight);
-        
-        // تحديث الارتفاع فقط عند تدوير الشاشة (وليس عند التمرير)
-        window.addEventListener('orientationchange', () => {
-            setTimeout(setFixedBackgroundHeight, 200);
-        });
-
 
         const START_DATE_STRING = "2025-11-23T03:20:00"; 
 
