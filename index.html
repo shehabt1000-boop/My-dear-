@@ -17,25 +17,32 @@
     <style>
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
-        /* 3. الخلفية المثبتة (بدون ظل أسود) */
+        /* الخلفية المثبتة */
         #fixed-background {
             position: fixed; 
             top: 0; 
             left: 0; 
             width: 100%; 
-            /* الارتفاع سيتم ضبطه بالجافاسكريبت لمنع الزوم */
+            /* الارتفاع سيتم تحديده بالجافاسكريبت ليصبح ثابتاً */
             height: 100vh; 
             background-image: url('https://raw.githubusercontent.com/shehabt1000-boop/Moussa/3c5822b0deb99157562300b4aefb8ce499b83603/IMG-20251124-WA0051.jpg');
             background-size: cover;
             background-position: center;
             z-index: -10;
             background-repeat: no-repeat;
-            /* تم إزالة ::after الذي كان يسبب الظل الأسود */
+            /* منع أي تفاعل مع الخلفية */
+            pointer-events: none;
+        }
+
+        /* 1. زيادة كثافة الظل (0.6) لتوضيح النصوص */
+        #fixed-background::after {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.6); /* تم التغميق */
         }
 
         body {
             font-family: 'Cairo', sans-serif;
-            background-color: #000000; /* لمنع ظهور اللون الأبيض عند السحب */
+            background-color: #000000;
             color: #fff;
             overflow-x: hidden;
             position: relative;
@@ -47,14 +54,20 @@
         .font-english { font-family: 'Great Vibes', cursive; }
         .font-handwriting { font-family: 'Marck Script', cursive; }
 
-        /* --- شاشات الدخول والتحميل (بدون ظل) --- */
+        /* --- شاشات الدخول والتحميل --- */
         #login-screen, #loading-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 9999;
             background: transparent;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             transition: opacity 0.5s ease-out;
-            /* تم إزالة ::before الذي كان يسبب الظل */
+        }
+        
+        /* ظل إضافي لشاشة الدخول */
+        #login-screen::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: -1;
         }
 
         /* --- أيقونة التحميل --- */
@@ -64,7 +77,7 @@
         }
         .spinner-ring {
             position: absolute; width: 100%; height: 100%;
-            border: 3px solid rgba(255, 255, 255, 0.3); /* زيادة الوضوح قليلاً */
+            border: 3px solid rgba(255, 255, 255, 0.3);
             border-top: 3px solid #e11d48;
             border-radius: 50%;
             animation: spin 1s linear infinite;
@@ -78,20 +91,20 @@
 
         /* --- حقل الإدخال --- */
         .input-glass {
-            background: rgba(255, 255, 255, 0.2); /* زيادة الشفافية قليلاً لتعويض غياب الظل */
+            background: rgba(255, 255, 255, 0.2);
             border: 1px solid rgba(255, 255, 255, 0.5);
             color: white; padding: 12px; border-radius: 50px;
             text-align: center; font-size: 1.2rem; letter-spacing: 2px;
             width: 75%; max-width: 200px; outline: none; margin-bottom: 20px;
             backdrop-filter: none; 
             transition: border-color 0.3s;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.5); /* ظل للنص عشان يبان فوق الصورة الفاتحة */
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
         }
         .input-glass:focus { border-color: #fb7185; background: rgba(255,255,255,0.3); }
         
-        /* تحسين قراءة النصوص فوق الخلفية الفاتحة */
+        /* تحسين قراءة النصوص */
         h1, h2, p, span, button {
-            text-shadow: 0 2px 10px rgba(0,0,0,0.7); /* ظل قوي للنصوص */
+            text-shadow: 0 2px 10px rgba(0,0,0,0.9); 
         }
 
         .hidden-content { display: none !important; }
@@ -114,7 +127,7 @@
 
         /* --- الكروت الزجاجية --- */
         .glass-card {
-            background: rgba(0, 0, 0, 0.4); /* خلفية داكنة للكروت عشان الكلام يبان */
+            background: rgba(0, 0, 0, 0.4);
             backdrop-filter: blur(5px);
             border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 15px;
@@ -195,11 +208,12 @@
             border: 2px solid #fb7185; padding: 5px;
         }
 
-        /* --- نافذة الرسالة --- */
+        /* --- نافذة الرسالة (مع ضباب أسود) --- */
         .modal {
             display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%;
-            background-color: transparent; 
-            backdrop-filter: none;
+            /* 3. إعادة الضباب الأسود حول الرسالة */
+            background-color: rgba(0, 0, 0, 0.85); 
+            backdrop-filter: blur(8px);
             align-items: center; justify-content: center;
         }
         .paper {
@@ -353,18 +367,18 @@
                 </div>
             </div>
 
-            <!-- قسم العداد (2. تم تصغير العرض والحشو بشكل أكبر) -->
-            <section class="w-full max-w-xs px-4 mb-10"> <!-- max-w-xs: عرض صغير جداً للهاتف -->
-                <div class="glass-card p-3 text-center"> <!-- تقليل الحشو العام -->
+            <!-- قسم العداد (2. تم تصغير العرض والحشو) -->
+            <section class="w-full max-w-xs px-4 mb-10">
+                <div class="glass-card p-3 text-center">
                     <h3 class="text-base font-bold text-rose-400 mb-2">بداية حكايتنا</h3>
                     <p class="text-[10px] text-gray-300 mb-3 leading-relaxed">
                         في يوم <span class="font-bold text-white">23/11/2025</span> الساعة <span class="font-bold text-white">3:20</span>
-                        <br>اللحظة اللي غيرت كل حاجة..
+                        <br>اللحظة اللي غيرت كل حاجة لما اعترفتي بحبك ليا.. ومن هنا بدأ العمر يحلو.
                     </p>
                     
-                    <div class="grid grid-cols-4 gap-1 text-center" id="counter"> <!-- gap-1 مسافات ضيقة -->
+                    <div class="grid grid-cols-4 gap-1 text-center" id="counter">
                         <div class="bg-black/40 py-1.5 px-0.5 rounded border border-rose-500/30">
-                            <span class="block text-sm font-bold text-white" id="days">0</span> <!-- text-sm -->
+                            <span class="block text-sm font-bold text-white" id="days">0</span>
                             <span class="text-[9px] text-rose-300">يوم</span>
                         </div>
                         <div class="bg-black/40 py-1.5 px-0.5 rounded border border-rose-500/30">
@@ -476,18 +490,19 @@
             });
         }
 
-        // 3. كود تثبيت الخلفية لمنع الزوم عند اختفاء شريط العنوان
+        // 2. كود تثبيت الخلفية لمنع الزوم (الحل الجذري)
         function setFixedBackgroundHeight() {
             const bg = document.getElementById('fixed-background');
-            // نضبط الارتفاع مرة واحدة بناءً على ارتفاع الشاشة الحالي
+            // نثبت الارتفاع بالبكسل بناءً على أول تحميل للصفحة
             bg.style.height = window.innerHeight + 'px';
         }
         
-        // استدعاء الدالة عند التحميل
+        // استدعاء الدالة عند التحميل فقط
         window.addEventListener('load', setFixedBackgroundHeight);
-        // (اختياري) يمكن استدعاؤها عند تغيير اتجاه الشاشة فقط وليس عند التمرير
+        
+        // تحديث الارتفاع فقط عند تدوير الشاشة (وليس عند اختفاء البار)
         window.addEventListener('orientationchange', () => {
-            setTimeout(setFixedBackgroundHeight, 100);
+            setTimeout(setFixedBackgroundHeight, 200);
         });
 
 
