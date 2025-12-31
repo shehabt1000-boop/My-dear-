@@ -17,25 +17,27 @@
     <style>
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
-        /* 2. حل مشكلة الخلفية باستخدام dvh */
+        /* 3. إعدادات الخلفية لمنع الزوم الزائد */
         #fixed-background {
             position: fixed; 
             top: 0; 
             left: 0; 
             width: 100%; 
-            height: 100vh; /* Fallback */
-            height: 100dvh; /* الحل السحري: يتكيف مع شريط العنوان */
+            /* تم إرجاعها لـ 100% لتقليل الزوم، والجافاسكريبت سيثبتها */
+            height: 100%; 
             background-image: url('https://raw.githubusercontent.com/shehabt1000-boop/Moussa/3c5822b0deb99157562300b4aefb8ce499b83603/IMG-20251124-WA0051.jpg');
             background-size: cover;
-            background-position: center;
+            /* التركيز على أعلى الصورة (الوجوه) بدلاً من المنتصف */
+            background-position: center top; 
             z-index: -10;
             background-repeat: no-repeat;
             pointer-events: none;
         }
 
+        /* 1. تخفيف الظل جداً (0.2) */
         #fixed-background::after {
             content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.6);
+            background: rgba(0, 0, 0, 0.2); /* ظل خفيف جداً */
         }
 
         body {
@@ -63,7 +65,7 @@
         
         #login-screen::before {
             content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.4);
+            background: rgba(0, 0, 0, 0.3);
             z-index: -1;
         }
 
@@ -99,8 +101,9 @@
         }
         .input-glass:focus { border-color: #fb7185; background: rgba(255,255,255,0.3); }
         
-        h1, h2, p, span, button {
-            text-shadow: 0 2px 10px rgba(0,0,0,0.9); 
+        /* تحسين قراءة النصوص (ظل قوي لتعويض الخلفية الفاتحة) */
+        h1, h2, p, span, button, div {
+            text-shadow: 0 2px 8px rgba(0,0,0,0.8); 
         }
 
         .hidden-content { display: none !important; }
@@ -121,11 +124,10 @@
             100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
         }
 
-        /* --- 1. الكروت الزجاجية (تعديل الشفافية) --- */
+        /* --- الكروت الزجاجية --- */
         .glass-card {
-            /* جعل الخلفية شفافة أكثر (زجاجية) بدلاً من السواد */
             background: rgba(255, 255, 255, 0.1); 
-            backdrop-filter: blur(10px); /* زيادة التغبيش لتأثير الزجاج */
+            backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 15px;
             box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
@@ -363,31 +365,31 @@
                 </div>
             </div>
 
-            <!-- قسم العداد (1. تم تكبير العرض قليلاً وتعديل النصوص) -->
-            <section class="w-full max-w-sm px-4 mb-10"> <!-- max-w-sm بدلاً من xs -->
-                <div class="glass-card p-4 text-center">
-                    <h3 class="text-lg font-bold text-rose-400 mb-2">بداية حكايتنا</h3>
-                    <p class="text-xs text-gray-300 mb-3 leading-relaxed">
+            <!-- قسم العداد (2. تم تصغير العرض والحشو بشكل أكبر) -->
+            <section class="w-[90%] max-w-[280px] px-2 mb-10"> <!-- عرض أصغر -->
+                <div class="glass-card p-2 text-center"> <!-- حشو أقل -->
+                    <h3 class="text-base font-bold text-rose-400 mb-2">بداية حكايتنا</h3>
+                    <p class="text-[10px] text-gray-300 mb-3 leading-relaxed">
                         في يوم <span class="font-bold text-white">23/11/2025</span> الساعة <span class="font-bold text-white">3:20</span>
                         <br>اللحظة اللي غيرت كل حاجة لما اعترفتي بحبك ليا.. ومن هنا بدأ العمر يحلو.
                     </p>
                     
-                    <div class="grid grid-cols-4 gap-2 text-center" id="counter">
-                        <div class="bg-black/40 py-2 px-1 rounded border border-rose-500/30">
-                            <span class="block text-base font-bold text-white" id="days">0</span>
-                            <span class="text-[10px] text-rose-300">يوم</span>
+                    <div class="grid grid-cols-4 gap-1 text-center" id="counter">
+                        <div class="bg-black/40 py-1.5 px-0.5 rounded border border-rose-500/30">
+                            <span class="block text-sm font-bold text-white" id="days">0</span>
+                            <span class="text-[9px] text-rose-300">يوم</span>
                         </div>
-                        <div class="bg-black/40 py-2 px-1 rounded border border-rose-500/30">
-                            <span class="block text-base font-bold text-white" id="hours">0</span>
-                            <span class="text-[10px] text-rose-300">ساعة</span>
+                        <div class="bg-black/40 py-1.5 px-0.5 rounded border border-rose-500/30">
+                            <span class="block text-sm font-bold text-white" id="hours">0</span>
+                            <span class="text-[9px] text-rose-300">ساعة</span>
                         </div>
-                        <div class="bg-black/40 py-2 px-1 rounded border border-rose-500/30">
-                            <span class="block text-base font-bold text-white" id="minutes">0</span>
-                            <span class="text-[10px] text-rose-300">دقيقة</span>
+                        <div class="bg-black/40 py-1.5 px-0.5 rounded border border-rose-500/30">
+                            <span class="block text-sm font-bold text-white" id="minutes">0</span>
+                            <span class="text-[9px] text-rose-300">دقيقة</span>
                         </div>
-                        <div class="bg-black/40 py-2 px-1 rounded border border-rose-500/30">
-                            <span class="block text-base font-bold text-white" id="seconds">0</span>
-                            <span class="text-[10px] text-rose-300">ثانية</span>
+                        <div class="bg-black/40 py-1.5 px-0.5 rounded border border-rose-500/30">
+                            <span class="block text-sm font-bold text-white" id="seconds">0</span>
+                            <span class="text-[9px] text-rose-300">ثانية</span>
                         </div>
                     </div>
                     <p id="future-msg" class="mt-2 text-[10px] text-yellow-400 hidden">لسه التاريخ مجاش.. بنجهز للبداية 😉</p>
@@ -485,6 +487,23 @@
                     .catch(err => console.log('Service Worker Failed', err));
             });
         }
+
+        // 4. كود تثبيت الخلفية (الحل الجذري لمشكلة التوسع)
+        function setFixedBackgroundHeight() {
+            const bg = document.getElementById('fixed-background');
+            // نثبت الارتفاع بالبكسل بناءً على أول تحميل للصفحة
+            // هذا يمنع الخلفية من التغير عند اختفاء شريط العنوان
+            bg.style.height = window.innerHeight + 'px';
+        }
+        
+        // استدعاء الدالة عند التحميل فقط
+        window.addEventListener('load', setFixedBackgroundHeight);
+        
+        // تحديث الارتفاع فقط عند تدوير الشاشة (وليس عند التمرير)
+        window.addEventListener('orientationchange', () => {
+            setTimeout(setFixedBackgroundHeight, 200);
+        });
+
 
         const START_DATE_STRING = "2025-11-23T03:20:00"; 
 
