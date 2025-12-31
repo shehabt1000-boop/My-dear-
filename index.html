@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Aya & You - Forever</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700;900&family=Great+Vibes&family=Marck+Script&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        /* --- الأساسيات --- */
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #0f0f1a;
+            color: #fff;
+            overflow-x: hidden;
+            position: relative;
+            margin: 0;
+        }
+
+        .font-english { font-family: 'Great Vibes', cursive; }
+        .font-handwriting { font-family: 'Marck Script', cursive; }
+
+        /* --- شاشات الدخول والتحميل --- */
+        #login-screen, #loading-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 9999;
+            background: radial-gradient(circle at center, #1f050a 0%, #000000 100%);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: opacity 0.5s ease-out;
+        }
+
+        .input-glass {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(225, 29, 72, 0.4);
+            color: white; padding: 12px; border-radius: 25px;
+            text-align: center; font-size: 1.3rem; letter-spacing: 3px;
+            width: 70%; max-width: 250px; outline: none; margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+        .input-glass:focus { border-color: #fb7185; box-shadow: 0 0 15px rgba(225, 29, 72, 0.3); }
+
+        .hidden-content { display: none !important; }
+
+        /* --- القلوب --- */
+        .heart-bg {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 0; overflow: hidden;
+        }
+        .heart {
+            position: absolute; font-size: 1.5rem; color: rgba(229, 62, 62, 0.6);
+            will-change: transform, opacity; animation-name: fall;
+            animation-timing-function: linear; animation-fill-mode: forwards;
+        }
+        @keyframes fall {
+            0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+        }
+
+        /* --- الكروت الزجاجية --- */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        /* --- شارة السنوات (تم إبطاء الوميض) --- */
+        .year-badge {
+            display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+            background: rgba(0, 0, 0, 0.3); 
+            padding: 10px 30px; border-radius: 50px;
+            margin-bottom: 60px;
+            font-size: 1.1rem;
+            border: 2px solid rgba(225, 29, 72, 0.5);
+            /* تم تغيير السرعة إلى 3s لتكون أبطأ */
+            animation: flashBorder 3s infinite ease-in-out;
+        }
+
+        @keyframes flashBorder {
+            0% { border-color: rgba(225, 29, 72, 0.2); box-shadow: 0 0 0 rgba(225, 29, 72, 0); }
+            50% { border-color: rgba(225, 29, 72, 1); box-shadow: 0 0 20px rgba(225, 29, 72, 0.6); }
+            100% { border-color: rgba(225, 29, 72, 0.2); box-shadow: 0 0 0 rgba(225, 29, 72, 0); }
+        }
+
+        /* --- السلايدر --- */
+        .slider-container { 
+            overflow: hidden; white-space: nowrap; position: relative; padding: 20px 0; 
+            mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+            -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+        }
+        .slider-track { display: inline-block; animation: scroll 60s linear infinite; will-change: transform; }
+        .slider-item {
+            display: inline-block; width: 300px; height: 400px; margin: 0 10px;
+            border-radius: 15px; overflow: hidden; border: 2px solid #e11d48;
+            transition: transform 0.3s; position: relative; cursor: pointer;
+        }
+        .slider-item:hover { transform: scale(1.02); z-index: 10; }
+        .slider-item img { width: 100%; height: 100%; object-fit: cover; }
+        
+        html[dir="rtl"] .slider-track { animation: scrollRTL 60s linear infinite; }
+        @keyframes scrollRTL { 0% { transform: translateX(0); } 100% { transform: translateX(50%); } }
+
+        /* --- عارض الصور --- */
+        #lightbox {
+            position: fixed; z-index: 99999; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95); display: none; align-items: center; justify-content: center;
+        }
+        #lightbox img { max-width: 90%; max-height: 85%; border-radius: 10px; border: 2px solid #e11d48; }
+        #lightbox-close {
+            position: absolute; top: 20px; right: 20px; font-size: 40px; color: #fff; cursor: pointer;
+            background: rgba(225, 29, 72, 0.8); width: 50px; height: 50px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        /* --- كروت الحب --- */
+        .flip-card {
+            background-color: transparent; width: 100%; height: 150px;
+            perspective: 1000px; cursor: pointer;
+        }
+        .flip-card-inner {
+            position: relative; width: 100%; height: 100%; text-align: center;
+            transition: transform 0.6s; transform-style: preserve-3d;
+        }
+        .flip-card.flipped .flip-card-inner { transform: rotateY(180deg); }
+        .flip-card-front, .flip-card-back {
+            position: absolute; width: 100%; height: 100%;
+            -webkit-backface-visibility: hidden; backface-visibility: hidden;
+            border-radius: 15px; display: flex; align-items: center; justify-content: center; padding: 10px;
+        }
+        .flip-card-front {
+            background: linear-gradient(45deg, #e11d48, #ff9a9e);
+            color: white; font-weight: bold; font-size: 1.2rem;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .flip-card-back {
+            /* هذا هو اللون المرجعي */
+            background: linear-gradient(to bottom, #9f1239, #500724); 
+            color: #ffe4e6;
+            transform: rotateY(180deg);
+            font-family: 'Marck Script', cursive; font-size: 1.5rem;
+            border: 2px solid #fb7185; padding: 10px;
+        }
+
+        /* --- نافذة الرسالة (تم توحيد اللون مع الكروت) --- */
+        .modal {
+            display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.9); backdrop-filter: blur(5px);
+            align-items: center; justify-content: center;
+        }
+        .paper {
+            /* نفس لون خلفية الكروت بالضبط */
+            background: linear-gradient(to bottom, #9f1239, #500724);
+            color: #ffe4e6; /* نفس لون خط الكروت */
+            width: 90%; max-width: 400px;
+            padding: 50px 30px 30px 30px;
+            border-radius: 15px; 
+            border: 2px solid #fb7185; /* نفس لون إطار الكروت */
+            box-shadow: 0 0 30px rgba(159, 18, 57, 0.4);
+            font-family: 'Marck Script', cursive; font-size: 1.6rem; line-height: 1.8;
+            position: relative; transform: rotate(-1deg);
+        }
+        .paper-close {
+            position: absolute; top: 15px; right: 20px;
+            font-family: sans-serif; font-size: 28px; cursor: pointer; color: #fff;
+            background: rgba(0,0,0,0.3); width: 35px; height: 35px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.3s;
+        }
+        .paper-close:hover { background: rgba(255, 255, 255, 0.2); }
+
+        /* --- الفيديو --- */
+        .video-wrapper {
+            position: relative; width: 100%; max-width: 600px; height: 80vh;
+            margin: 0 auto 3rem auto; border-radius: 20px; overflow: hidden;
+            box-shadow: 0 10px 30px rgba(225, 29, 72, 0.3); border: 1px solid #e11d48; background-color: #000;
+        }
+        .video-wrapper video { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .play-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.2); display: flex; justify-content: center; align-items: center;
+            cursor: pointer; transition: opacity 0.3s; z-index: 2;
+        }
+        .play-icon {
+            font-size: 4rem; color: #fff; background: rgba(225, 29, 72, 0.8);
+            border-radius: 50%; width: 80px; height: 80px; display: flex;
+            justify-content: center; align-items: center; box-shadow: 0 0 20px #e11d48;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(225, 29, 72, 0.7); } 70% { box-shadow: 0 0 0 20px rgba(225, 29, 72, 0); } 100% { box-shadow: 0 0 0 0 rgba(225, 29, 72, 0); } }
+
+        /* الموسيقى */
+        .music-btn {
+            position: fixed; bottom: 20px; left: 20px; z-index: 50;
+            background: rgba(225, 29, 72, 0.8); width: 50px; height: 50px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; box-shadow: 0 0 15px rgba(225, 29, 72, 0.6);
+            transition: all 0.3s; animation: pulse-btn 2s infinite;
+        }
+        @keyframes pulse-btn { 0% { box-shadow: 0 0 0 0 rgba(225, 29, 72, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(225, 29, 72, 0); } 100% { box-shadow: 0 0 0 0 rgba(225, 29, 72, 0); } }
+
+        .gradient-text {
+            background: linear-gradient(to right, #ff9a9e, #fecfef, #fff);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- عارض الصور -->
+    <div id="lightbox">
+        <div id="lightbox-close" onclick="closeLightbox()">&times;</div>
+        <img id="lightbox-img" src="" alt="Full Image">
+    </div>
+
+    <!-- 1. شاشة الدخول -->
+    <div id="login-screen">
+        <i class="fas fa-heart text-rose-600 text-5xl mb-6 animate-pulse"></i>
+        <h2 class="text-2xl text-white font-bold mb-8">كلمة السر هي تاريخنا ❤️</h2>
+        <input type="password" id="pass-input" inputmode="numeric" pattern="[0-9]*" class="input-glass" placeholder="DDMMYYYY" maxlength="8">
+        <button onclick="checkPassword()" class="mt-4 px-10 py-3 bg-gradient-to-r from-rose-600 to-pink-600 text-white rounded-full font-bold shadow-lg transform transition active:scale-95">
+            دخول
+        </button>
+        <p id="error-msg" class="text-rose-400 mt-4 text-sm hidden font-bold">التاريخ غلط.. فكري تاني في بدايتنا 😉</p>
+    </div>
+
+    <!-- 2. شاشة التحميل -->
+    <div id="loading-screen" class="hidden-content">
+        <div class="pulse-heart" style="font-size: 4rem; color: #e11d48; animation: pulse-load 1.2s infinite;">❤️</div>
+        <p class="text-rose-200 mt-6 text-xl font-handwriting">بجهزلك المفاجأة...</p>
+    </div>
+
+    <!-- 3. المحتوى الرئيسي -->
+    <div id="main-content" class="hidden-content">
+        
+        <div class="heart-bg" id="heart-bg"></div>
+
+        <div class="music-btn" onclick="toggleMusic()">
+            <i class="fas fa-music text-white" id="music-icon"></i>
+        </div>
+        
+        <audio id="bg-music" loop>
+            <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+        </audio>
+
+        <main class="relative z-10 w-full min-h-screen flex flex-col items-center pb-20">
+            
+            <section class="text-center pt-16 px-4 mb-12 w-full">
+                
+                <!-- شارة 2025-2026 -->
+                <div class="year-badge">
+                   <!-- تم توحيد اللون هنا -->
+                   <span class="text-rose-500 font-bold">من 2025</span>
+                   <i class="fas fa-arrow-left text-rose-500 text-xs mx-2"></i>
+                   <span class="text-rose-500 font-bold animate-pulse">إلى 2026 سوا</span>
+                </div>
+
+                <h1 class="text-5xl md:text-7xl font-bold mb-4 font-english text-rose-500">Happy New Year</h1>
+                
+                <div class="w-full flex justify-center">
+                    <h2 class="text-4xl md:text-6xl font-bold mb-6 gradient-text text-center">
+                        Aya <i class="fa-solid fa-heart text-red-600 animate-bounce inline-block"></i>
+                    </h2>
+                </div>
+
+                <p class="text-xl md:text-2xl text-gray-300 max-w-2xl mx-auto leading-relaxed">
+                    كل سنة وانتي معايا، كل سنة وانتي أجمل حاجة حصلت في حياتي.
+                </p>
+                
+                <button onclick="openModal()" class="mt-8 px-8 py-3 bg-gradient-to-r from-rose-500 to-pink-500 rounded-full text-white font-bold shadow-lg hover:shadow-rose-500/50 transform hover:scale-105 transition duration-300">
+                    <i class="fas fa-envelope-open-text ml-2"></i> رسالة خاصة ليكي
+                </button>
+            </section>
+
+            <!-- نافذة الرسالة -->
+            <div id="letterModal" class="modal">
+                <div class="paper">
+                    <span class="paper-close" onclick="closeModal()">&times;</span>
+                    <p>يا أغلى Aya في الوجود،</p>
+                    <p>
+                        من يوم 23/11 حياتي اتغيرت، وجودك هو أحلى حاجة حصلتلي. السنة دي حبيت أبدأها بيكي ومعاكي، عشان أنتِ البداية لكل حاجة حلوة.
+                    </p>
+                    <p>
+                        وعد مني، تفضل السنين جاية وإحنا سوا.. بحبك ❤️.
+                    </p>
+                </div>
+            </div>
+
+            <!-- قسم العداد -->
+            <section class="w-full max-w-4xl px-4 mb-16">
+                <div class="glass-card p-8 text-center">
+                    <h3 class="text-2xl font-bold text-rose-400 mb-4">بداية حكايتنا</h3>
+                    <p class="text-lg text-gray-300 mb-6">
+                        في يوم <span class="font-bold text-white">23/11/2025</span> الساعة <span class="font-bold text-white">3:20</span>
+                        <br>اللحظة اللي غيرت كل حاجة لما اعترفتي بحبك ليا.. ومن هنا بدأ العمر يحلو.
+                    </p>
+                    
+                    <div class="grid grid-cols-4 gap-2 md:gap-4 text-center" id="counter">
+                        <div class="bg-black/30 p-3 rounded-lg border border-rose-500/30">
+                            <span class="block text-2xl md:text-3xl font-bold text-white" id="days">0</span>
+                            <span class="text-xs text-rose-300">يوم</span>
+                        </div>
+                        <div class="bg-black/30 p-3 rounded-lg border border-rose-500/30">
+                            <span class="block text-2xl md:text-3xl font-bold text-white" id="hours">0</span>
+                            <span class="text-xs text-rose-300">ساعة</span>
+                        </div>
+                        <div class="bg-black/30 p-3 rounded-lg border border-rose-500/30">
+                            <span class="block text-2xl md:text-3xl font-bold text-white" id="minutes">0</span>
+                            <span class="text-xs text-rose-300">دقيقة</span>
+                        </div>
+                        <div class="bg-black/30 p-3 rounded-lg border border-rose-500/30">
+                            <span class="block text-2xl md:text-3xl font-bold text-white" id="seconds">0</span>
+                            <span class="text-xs text-rose-300">ثانية</span>
+                        </div>
+                    </div>
+                    <p id="future-msg" class="mt-4 text-sm text-yellow-400 hidden">لسه التاريخ مجاش.. بنجهز للبداية 😉</p>
+                    <p id="past-msg" class="mt-4 text-sm text-gray-400 hidden">بنحب بعض بقالنا...</p>
+                </div>
+            </section>
+
+            <!-- قسم كروت الحب -->
+            <section class="w-full max-w-4xl px-4 mb-20">
+                <h3 class="text-center text-3xl font-bold text-rose-400 mb-8">ليه بحبك؟ <span class="text-sm text-gray-400 block mt-2">(اضغطي على الكارت)</span></h3>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front"><i class="fas fa-heart text-2xl mb-2 block w-full"></i>السبب الأول</div>
+                            <div class="flip-card-back">عشان حنيتك عليا</div>
+                        </div>
+                    </div>
+                    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front"><i class="fas fa-star text-2xl mb-2 block w-full"></i>السبب التاني</div>
+                            <div class="flip-card-back">عشان بتفهميني من عيني</div>
+                        </div>
+                    </div>
+                    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front"><i class="fas fa-smile text-2xl mb-2 block w-full"></i>السبب التالت</div>
+                            <div class="flip-card-back">ضحكتك اللي بتنور يومي</div>
+                        </div>
+                    </div>
+                    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front"><i class="fas fa-infinity text-2xl mb-2 block w-full"></i>السبب الرابع</div>
+                            <div class="flip-card-back">عشان إنتي Aya</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- السلايدر -->
+            <section class="w-full mb-20 overflow-hidden">
+                <h3 class="text-center text-3xl font-bold text-rose-400 mb-8">ذكرياتنا</h3>
+                <div class="slider-container">
+                    <div class="slider-track" id="slider-track">
+                        <div class="slider-item" onclick="openLightbox(this.querySelector('img').src)">
+                            <img src="https://raw.githubusercontent.com/shehabt1000-boop/Moussa/3c5822b0deb99157562300b4aefb8ce499b83603/%D9%A2%D9%A0%D9%A2%D9%A5%D9%A1%D9%A2%D9%A0%D9%A1_%D9%A1%D9%A6%D9%A4%D9%A3%D9%A4%D9%A0(1).jpg" alt="1">
+                        </div>
+                        <div class="slider-item" onclick="openLightbox(this.querySelector('img').src)">
+                            <img src="https://raw.githubusercontent.com/shehabt1000-boop/Moussa/3c5822b0deb99157562300b4aefb8ce499b83603/%D9%A2%D9%A0%D9%A2%D9%A5%D9%A1%D9%A2%D9%A0%D9%A1_%D9%A1%D9%A6%D9%A4%D9%A2%D9%A3%D9%A1(1).jpg" alt="2">
+                        </div>
+                        <div class="slider-item" onclick="openLightbox(this.querySelector('img').src)">
+                            <img src="https://raw.githubusercontent.com/shehabt1000-boop/Moussa/3c5822b0deb99157562300b4aefb8ce499b83603/%D9%A2%D9%A0%D9%A2%D9%A5%D9%A1%D9%A2%D9%A0%D9%A1_%D9%A1%D9%A6%D9%A4%D9%A0%D9%A2%D9%A4(1).jpg" alt="3">
+                        </div>
+                        <div class="slider-item" onclick="openLightbox(this.querySelector('img').src)">
+                            <img src="https://raw.githubusercontent.com/shehabt1000-boop/Moussa/3c5822b0deb99157562300b4aefb8ce499b83603/IMG-20251124-WA0051.jpg" alt="4">
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- الفيديوهات -->
+            <section class="w-full max-w-4xl px-4">
+                <h3 class="text-center text-3xl font-bold text-rose-400 mb-8">فيديوهاتنا</h3>
+                <div class="video-wrapper group">
+                    <video id="video1" playsinline loop preload="metadata">
+                        <source src="https://raw.githubusercontent.com/shehabt1000-boop/Moussa/795184b0ad13dd537fd64eb6208a05774bb399d1/lv_0_%D9%A2%D9%A0%D9%A2%D9%A5%D9%A1%D9%A2%D9%A0%D9%A2%D9%A0%D9%A1%D9%A0%D9%A1%D9%A3%D9%A2.mp4#t=0.1" type="video/mp4">
+                    </video>
+                    <div class="play-overlay" onclick="toggleVideo('video1', this)">
+                        <div class="play-icon"><i class="fas fa-play pl-2"></i></div>
+                    </div>
+                </div>
+                <div class="video-wrapper group">
+                    <video id="video2" playsinline loop preload="metadata">
+                        <source src="https://raw.githubusercontent.com/shehabt1000-boop/Moussa/3c5822b0deb99157562300b4aefb8ce499b83603/%D9%A2%D9%A0%D9%A2%D9%A5%D9%A1%D9%A1%D9%A2%D9%A3_%D9%A2%D9%A1%D9%A0%D9%A9%D9%A1%D9%A3.mp4#t=0.1" type="video/mp4">
+                    </video>
+                    <div class="play-overlay" onclick="toggleVideo('video2', this)">
+                        <div class="play-icon"><i class="fas fa-play pl-2"></i></div>
+                    </div>
+                </div>
+            </section>
+
+            <footer class="text-center mt-12 text-gray-400">
+                <p class="font-english text-2xl text-rose-500">Love You Forever</p>
+                <p class="text-sm mt-2">صُنع بحب لـ Aya</p>
+            </footer>
+
+        </main>
+    </div>
+
+    <script>
+        const START_DATE_STRING = "2025-11-23T03:20:00"; 
+
+        function checkPassword() {
+            const input = document.getElementById('pass-input').value;
+            if (input === "23112025") {
+                document.getElementById('pass-input').blur();
+                document.getElementById('login-screen').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('login-screen').style.display = 'none';
+                    document.getElementById('loading-screen').classList.remove('hidden-content');
+                    initSiteContent();
+                }, 500);
+                setTimeout(() => {
+                    document.getElementById('loading-screen').style.opacity = '0';
+                    setTimeout(() => {
+                        document.getElementById('loading-screen').style.display = 'none';
+                        document.getElementById('main-content').classList.remove('hidden-content');
+                        setupVideoObserver();
+                    }, 500);
+                }, 3000); 
+            } else {
+                document.getElementById('error-msg').classList.remove('hidden');
+            }
+        }
+
+        function initSiteContent() {
+            startCounter();
+            initSlider();
+            setInterval(createHeart, 1500); 
+        }
+
+        function startCounter() {
+            const startDate = new Date(START_DATE_STRING).getTime();
+            setInterval(() => {
+                const now = new Date().getTime();
+                const diff = now - startDate;
+                
+                if (diff < 0) {
+                    document.getElementById('future-msg').classList.remove('hidden');
+                    document.getElementById('past-msg').classList.add('hidden');
+                    document.getElementById("days").innerText = 0;
+                    document.getElementById("hours").innerText = 0;
+                    document.getElementById("minutes").innerText = 0;
+                    document.getElementById("seconds").innerText = 0;
+                } else {
+                    document.getElementById('future-msg').classList.add('hidden');
+                    document.getElementById('past-msg').classList.remove('hidden');
+                    document.getElementById("days").innerText = Math.floor(diff / (1000 * 60 * 60 * 24));
+                    document.getElementById("hours").innerText = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    document.getElementById("minutes").innerText = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                    document.getElementById("seconds").innerText = Math.floor((diff % (1000 * 60)) / 1000);
+                }
+            }, 1000);
+        }
+
+        function stopAllMedia(exceptId = null) {
+            const audio = document.getElementById('bg-music');
+            if (exceptId !== 'audio') {
+                audio.pause();
+                document.getElementById('music-icon').className = 'fas fa-music text-white';
+            }
+            document.querySelectorAll('video').forEach(vid => {
+                if (vid.id !== exceptId) {
+                    vid.pause();
+                    showOverlay(vid);
+                    vid.removeAttribute("controls");
+                }
+            });
+        }
+
+        function showOverlay(videoElement) {
+            const overlay = videoElement.parentElement.querySelector('.play-overlay');
+            if (overlay) {
+                overlay.style.display = 'flex';
+                setTimeout(() => overlay.style.opacity = '1', 10);
+            }
+        }
+
+        function toggleVideo(id, el) {
+            stopAllMedia(id); 
+            const vid = document.getElementById(id);
+            if (vid.paused) {
+                vid.play();
+                el.style.opacity = '0';
+                setTimeout(() => {
+                    el.style.display = 'none';
+                    vid.setAttribute("controls", "controls");
+                }, 300);
+            }
+        }
+
+        function setupVideoObserver() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (!entry.isIntersecting) {
+                        const video = entry.target;
+                        if (!video.paused) {
+                            video.pause();
+                            showOverlay(video);
+                            video.removeAttribute("controls");
+                        }
+                    }
+                });
+            }, { threshold: 0.5 });
+
+            document.querySelectorAll('video').forEach(video => {
+                observer.observe(video);
+            });
+        }
+
+        function toggleMusic() {
+            const audio = document.getElementById('bg-music');
+            const icon = document.getElementById('music-icon');
+            if (audio.paused) {
+                stopAllMedia('audio'); 
+                audio.play();
+                icon.className = 'fas fa-pause text-white';
+            } else {
+                audio.pause();
+                icon.className = 'fas fa-music text-white';
+            }
+        }
+
+        function createHeart() {
+            if(document.getElementsByClassName('heart').length > 15) return;
+            const h = document.createElement('div');
+            h.classList.add('heart');
+            h.innerHTML = '❤';
+            h.style.left = Math.random() * 95 + 'vw';
+            h.style.animationDuration = (Math.random() * 5 + 10) + 's';
+            h.style.fontSize = Math.random() * 15 + 10 + 'px';
+            document.getElementById('heart-bg').appendChild(h);
+            setTimeout(() => h.remove(), 15000);
+        }
+
+        function initSlider() {
+            const t = document.getElementById('slider-track');
+            t.innerHTML += t.innerHTML + t.innerHTML;
+        }
+
+        function openModal() { document.getElementById('letterModal').style.display = 'flex'; }
+        function closeModal() { document.getElementById('letterModal').style.display = 'none'; }
+        
+        function openLightbox(src) {
+            const lb = document.getElementById('lightbox');
+            const img = document.getElementById('lightbox-img');
+            img.src = src;
+            lb.style.display = 'flex';
+        }
+        function closeLightbox() {
+            document.getElementById('lightbox').style.display = 'none';
+        }
+
+    </script>
+</body>
+</html>
