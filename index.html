@@ -4,11 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Aya & You - Forever</title>
+    
+    <!-- إعدادات PWA -->
+    <meta name="theme-color" content="#0f0f1a">
+    <link rel="manifest" href="manifest.json"> <!-- اختياري لو حبيت تعمل تطبيق -->
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700;900&family=Great+Vibes&family=Marck+Script&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
-    <!-- 4 & 5. التحميل المسبق للصور (Preload) لحل مشكلة التقطيع والظهور المفاجئ -->
+    <!-- التحميل المسبق للصور -->
     <link rel="preload" as="image" href="https://raw.githubusercontent.com/shehabt1000-boop/Moussa/3c5822b0deb99157562300b4aefb8ce499b83603/IMG-20251124-WA0051.jpg">
     <link rel="preload" as="image" href="https://images.pexels.com/photos/3266703/pexels-photo-3266703.jpeg?auto=compress&cs=tinysrgb&w=600">
 
@@ -16,18 +21,24 @@
         /* --- الأساسيات --- */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
-        /* 3. تثبيت الخلفية بشكل صحيح للموبايل لمنع الزوم */
+        /* حل مشكلة الخلفية في كروم موبايل باستخدام dvh */
         #fixed-background {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100vh; /* Fallback للمتصفحات القديمة */
+            height: 100dvh; /* الحل السحري للموبايل */
             background-image: url('https://raw.githubusercontent.com/shehabt1000-boop/Moussa/3c5822b0deb99157562300b4aefb8ce499b83603/IMG-20251124-WA0051.jpg');
             background-size: cover;
             background-position: center;
-            z-index: -10; /* خلف كل شيء */
+            z-index: -10;
+            transform: translateZ(0); /* تفعيل تسريع الهاردوير لمنع التقطيع */
         }
-        /* طبقة التغميق */
+        
         #fixed-background::after {
             content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.7); /* تغميق مناسب */
+            background: rgba(0, 0, 0, 0.7);
         }
 
         body {
@@ -47,12 +58,11 @@
         #login-screen, #loading-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 9999;
-            background: transparent; /* الخلفية مثبتة في div منفصل */
+            background: transparent;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             transition: opacity 0.5s ease-out;
         }
         
-        /* طبقة تغميق إضافية خفيفة لشاشة الدخول */
         #login-screen::before {
             content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.3);
@@ -61,7 +71,7 @@
 
         /* --- أيقونة التحميل --- */
         .loader-container {
-            position: relative; width: 80px; height: 80px; /* تصغير الحجم */
+            position: relative; width: 80px; height: 80px;
             display: flex; justify-content: center; align-items: center;
         }
         .spinner-ring {
@@ -78,15 +88,13 @@
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         @keyframes pulse-heart { from { transform: scale(0.8); opacity: 0.8; } to { transform: scale(1.1); opacity: 1; } }
 
-
-        /* 2. تحسين حقل الإدخال (إزالة اللاج) */
+        /* --- حقل الإدخال --- */
         .input-glass {
-            background: rgba(255, 255, 255, 0.15); /* لون ثابت شفاف */
+            background: rgba(255, 255, 255, 0.15);
             border: 1px solid rgba(255, 255, 255, 0.3);
             color: white; padding: 12px; border-radius: 50px;
             text-align: center; font-size: 1.2rem; letter-spacing: 2px;
             width: 75%; max-width: 200px; outline: none; margin-bottom: 20px;
-            /* إزالة backdrop-filter لأنه يسبب لاج مع الكيبورد */
             backdrop-filter: none; 
             transition: border-color 0.3s;
         }
@@ -100,7 +108,7 @@
             pointer-events: none; z-index: 0; overflow: hidden;
         }
         .heart {
-            position: absolute; font-size: 1rem; /* تصغير القلوب */
+            position: absolute; font-size: 1rem;
             color: rgba(229, 62, 62, 0.7);
             will-change: transform, opacity; animation-name: fall;
             animation-timing-function: linear; animation-fill-mode: forwards;
@@ -110,7 +118,7 @@
             100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
         }
 
-        /* --- الكروت الزجاجية (تصغير الحواف) --- */
+        /* --- الكروت الزجاجية --- */
         .glass-card {
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(8px);
@@ -119,7 +127,7 @@
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
         }
 
-        /* --- شارة السنوات (تصغير) --- */
+        /* --- شارة السنوات --- */
         .year-badge {
             display: inline-flex; align-items: center; justify-content: center; gap: 6px;
             background: rgba(0, 0, 0, 0.3); 
@@ -135,7 +143,7 @@
             100% { border-color: rgba(225, 29, 72, 0.2); box-shadow: 0 0 0 rgba(225, 29, 72, 0); }
         }
 
-        /* --- السلايدر (تصغير) --- */
+        /* --- السلايدر --- */
         .slider-container { 
             overflow: hidden; white-space: nowrap; position: relative; padding: 10px 0; 
             mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
@@ -143,7 +151,7 @@
         }
         .slider-track { display: inline-block; animation: scroll 60s linear infinite; will-change: transform; }
         .slider-item {
-            display: inline-block; width: 180px; height: 250px; /* تصغير حجم الصور */
+            display: inline-block; width: 180px; height: 250px;
             margin: 0 6px;
             border-radius: 10px; overflow: hidden; border: 2px solid #e11d48;
             transition: transform 0.3s; position: relative; cursor: pointer;
@@ -165,9 +173,9 @@
             display: flex; align-items: center; justify-content: center;
         }
 
-        /* --- كروت الحب (تصغير) --- */
+        /* --- كروت الحب --- */
         .flip-card {
-            background-color: transparent; width: 100%; height: 110px; /* تصغير الارتفاع */
+            background-color: transparent; width: 100%; height: 110px;
             perspective: 1000px; cursor: pointer;
         }
         .flip-card-inner {
@@ -193,7 +201,7 @@
             border: 2px solid #fb7185; padding: 5px;
         }
 
-        /* --- نافذة الرسالة (تحميل مسبق للصورة) --- */
+        /* --- نافذة الرسالة --- */
         .modal {
             display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%;
             background-color: transparent; 
@@ -201,12 +209,11 @@
             align-items: center; justify-content: center;
         }
         .paper {
-            /* الصورة محملة مسبقاً في الـ head */
             background-image: url('https://images.pexels.com/photos/3266703/pexels-photo-3266703.jpeg?auto=compress&cs=tinysrgb&w=600');
             background-size: cover;
             background-position: center;
             color: #ffe4e6;
-            width: 85%; max-width: 320px; /* تصغير العرض */
+            width: 85%; max-width: 320px;
             padding: 35px 20px 20px 20px;
             border-radius: 15px; 
             border: 2px solid #fb7185;
@@ -231,7 +238,7 @@
 
         /* --- الفيديو --- */
         .video-wrapper {
-            position: relative; width: 100%; max-width: 600px; height: 50vh; /* تصغير الارتفاع */
+            position: relative; width: 100%; max-width: 600px; height: 50vh;
             margin: 0 auto 1.5rem auto; border-radius: 15px; overflow: hidden;
             box-shadow: 0 5px 20px rgba(225, 29, 72, 0.3); border: 1px solid #e11d48; background-color: #000;
         }
@@ -267,7 +274,7 @@
 </head>
 <body class="antialiased">
 
-    <!-- 3. الخلفية المثبتة (Fixed Background) -->
+    <!-- الخلفية المثبتة -->
     <div id="fixed-background"></div>
 
     <!-- عارض الصور -->
@@ -281,7 +288,6 @@
         <div class="relative z-10 flex flex-col items-center w-full">
             <i class="fas fa-heart text-rose-500 text-4xl mb-4 animate-pulse drop-shadow-lg"></i>
             <h2 class="text-lg text-white font-bold mb-6 drop-shadow-md">كلمة السر هي تاريخنا ❤️</h2>
-            <!-- 2. إضافة حدث focus لحل مشكلة الكيبورد -->
             <input type="password" id="pass-input" inputmode="numeric" pattern="[0-9]*" class="input-glass" placeholder="DDMMYYYY" maxlength="8" onfocus="adjustView()">
             <button onclick="checkPassword()" class="mt-2 px-8 py-2 bg-gradient-to-r from-rose-600 to-pink-600 text-white rounded-full font-bold shadow-lg transform transition active:scale-95 text-sm border border-white/20">
                 دخول
@@ -353,9 +359,9 @@
                 </div>
             </div>
 
-            <!-- قسم العداد -->
+            <!-- قسم العداد (تم تصغير الحجم) -->
             <section class="w-full max-w-4xl px-4 mb-10">
-                <div class="glass-card p-5 text-center">
+                <div class="glass-card p-4 text-center">
                     <h3 class="text-lg font-bold text-rose-400 mb-2">بداية حكايتنا</h3>
                     <p class="text-xs text-gray-300 mb-3 leading-relaxed">
                         في يوم <span class="font-bold text-white">23/11/2025</span> الساعة <span class="font-bold text-white">3:20</span>
@@ -467,36 +473,37 @@
     </div>
 
     <script>
+        // تسجيل Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(reg => console.log('Service Worker Registered!', reg))
+                    .catch(err => console.log('Service Worker Failed', err));
+            });
+        }
+
         const START_DATE_STRING = "2025-11-23T03:20:00"; 
 
-        // 2. دالة لضبط الشاشة عند فتح الكيبورد
         function adjustView() {
-            // محاولة رفع الشاشة قليلاً
-            setTimeout(() => {
-                window.scrollTo(0, 100);
-            }, 300);
+            setTimeout(() => { window.scrollTo(0, 100); }, 300);
         }
 
         function checkPassword() {
             const input = document.getElementById('pass-input').value;
             if (input === "23112025") {
                 document.getElementById('pass-input').blur();
-                
                 document.getElementById('login-screen').style.opacity = '0';
-                
                 setTimeout(() => {
                     document.getElementById('login-screen').style.display = 'none';
                     document.getElementById('loading-screen').classList.remove('hidden-content');
                     initSiteContent();
                 }, 500);
-
                 setTimeout(() => {
                     document.getElementById('loading-screen').style.opacity = '0';
                     setTimeout(() => {
                         document.getElementById('loading-screen').style.display = 'none';
                         document.getElementById('main-content').classList.remove('hidden-content');
                         setupVideoObserver();
-                        
                         const audio = document.getElementById('bg-music');
                         audio.play().catch(e => console.log("Audio play failed:", e));
                         document.getElementById('music-icon').className = 'fas fa-pause text-white';
@@ -518,7 +525,6 @@
             setInterval(() => {
                 const now = new Date().getTime();
                 const diff = now - startDate;
-                
                 if (diff < 0) {
                     document.getElementById('future-msg').classList.remove('hidden');
                     document.getElementById('past-msg').classList.add('hidden');
@@ -586,10 +592,7 @@
                     }
                 });
             }, { threshold: 0.5 });
-
-            document.querySelectorAll('video').forEach(video => {
-                observer.observe(video);
-            });
+            document.querySelectorAll('video').forEach(video => { observer.observe(video); });
         }
 
         function toggleMusic() {
@@ -634,7 +637,6 @@
         function closeLightbox() {
             document.getElementById('lightbox').style.display = 'none';
         }
-
     </script>
 </body>
 </html>
