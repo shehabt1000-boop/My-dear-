@@ -8,26 +8,36 @@
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700;900&family=Great+Vibes&family=Marck+Script&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
+    <!-- 4 & 5. التحميل المسبق للصور (Preload) لحل مشكلة التقطيع والظهور المفاجئ -->
+    <link rel="preload" as="image" href="https://raw.githubusercontent.com/shehabt1000-boop/Moussa/3c5822b0deb99157562300b4aefb8ce499b83603/IMG-20251124-WA0051.jpg">
+    <link rel="preload" as="image" href="https://images.pexels.com/photos/3266703/pexels-photo-3266703.jpeg?auto=compress&cs=tinysrgb&w=600">
+
     <style>
         /* --- الأساسيات --- */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body {
-            font-family: 'Cairo', sans-serif;
+        
+        /* 3. تثبيت الخلفية بشكل صحيح للموبايل لمنع الزوم */
+        #fixed-background {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-image: url('https://raw.githubusercontent.com/shehabt1000-boop/Moussa/3c5822b0deb99157562300b4aefb8ce499b83603/IMG-20251124-WA0051.jpg');
             background-size: cover;
             background-position: center;
-            background-attachment: fixed;
+            z-index: -10; /* خلف كل شيء */
+        }
+        /* طبقة التغميق */
+        #fixed-background::after {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.7); /* تغميق مناسب */
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
             color: #fff;
             overflow-x: hidden;
             position: relative;
             margin: 0;
-            padding-bottom: 20px; 
-        }
-
-        body::before {
-            content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.75);
-            z-index: -1;
+            padding-bottom: 20px;
+            min-height: 100vh;
         }
 
         .font-english { font-family: 'Great Vibes', cursive; }
@@ -37,47 +47,50 @@
         #login-screen, #loading-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 9999;
-            background: transparent; 
+            background: transparent; /* الخلفية مثبتة في div منفصل */
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             transition: opacity 0.5s ease-out;
         }
         
-        #login-screen::before, #loading-screen::before {
+        /* طبقة تغميق إضافية خفيفة لشاشة الدخول */
+        #login-screen::before {
             content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.4);
+            background: rgba(0, 0, 0, 0.3);
             z-index: -1;
         }
 
         /* --- أيقونة التحميل --- */
         .loader-container {
-            position: relative; width: 100px; height: 100px;
+            position: relative; width: 80px; height: 80px; /* تصغير الحجم */
             display: flex; justify-content: center; align-items: center;
         }
         .spinner-ring {
             position: absolute; width: 100%; height: 100%;
-            border: 4px solid rgba(255, 255, 255, 0.1);
-            border-top: 4px solid #e11d48;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top: 3px solid #e11d48;
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
         .loader-heart {
-            font-size: 2.5rem; color: #e11d48;
+            font-size: 2rem; color: #e11d48;
             animation: pulse-heart 1s infinite alternate;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         @keyframes pulse-heart { from { transform: scale(0.8); opacity: 0.8; } to { transform: scale(1.1); opacity: 1; } }
 
 
+        /* 2. تحسين حقل الإدخال (إزالة اللاج) */
         .input-glass {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.15); /* لون ثابت شفاف */
             border: 1px solid rgba(255, 255, 255, 0.3);
-            color: white; padding: 10px; border-radius: 25px;
-            text-align: center; font-size: 1.1rem; letter-spacing: 3px;
-            width: 80%; max-width: 220px; outline: none; margin-bottom: 20px;
-            transition: all 0.3s; 
+            color: white; padding: 12px; border-radius: 50px;
+            text-align: center; font-size: 1.2rem; letter-spacing: 2px;
+            width: 75%; max-width: 200px; outline: none; margin-bottom: 20px;
+            /* إزالة backdrop-filter لأنه يسبب لاج مع الكيبورد */
             backdrop-filter: none; 
+            transition: border-color 0.3s;
         }
-        .input-glass:focus { border-color: #fb7185; box-shadow: 0 0 15px rgba(225, 29, 72, 0.3); background: rgba(255,255,255,0.2); }
+        .input-glass:focus { border-color: #fb7185; background: rgba(255,255,255,0.25); }
 
         .hidden-content { display: none !important; }
 
@@ -87,7 +100,8 @@
             pointer-events: none; z-index: 0; overflow: hidden;
         }
         .heart {
-            position: absolute; font-size: 1.2rem; color: rgba(229, 62, 62, 0.7);
+            position: absolute; font-size: 1rem; /* تصغير القلوب */
+            color: rgba(229, 62, 62, 0.7);
             will-change: transform, opacity; animation-name: fall;
             animation-timing-function: linear; animation-fill-mode: forwards;
         }
@@ -96,44 +110,44 @@
             100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
         }
 
-        /* --- الكروت الزجاجية --- */
+        /* --- الكروت الزجاجية (تصغير الحواف) --- */
         .glass-card {
             background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(8px);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
         }
 
-        /* --- شارة السنوات --- */
+        /* --- شارة السنوات (تصغير) --- */
         .year-badge {
-            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            display: inline-flex; align-items: center; justify-content: center; gap: 6px;
             background: rgba(0, 0, 0, 0.3); 
-            padding: 8px 20px; border-radius: 50px;
-            margin-bottom: 40px; font-size: 0.9rem;
-            border: 2px solid rgba(225, 29, 72, 0.5);
+            padding: 6px 16px; border-radius: 50px;
+            margin-bottom: 30px; font-size: 0.85rem;
+            border: 1px solid rgba(225, 29, 72, 0.5);
             animation: flashBorder 3s infinite ease-in-out;
-            max-width: 90%;
+            max-width: 95%;
         }
         @keyframes flashBorder {
             0% { border-color: rgba(225, 29, 72, 0.2); box-shadow: 0 0 0 rgba(225, 29, 72, 0); }
-            50% { border-color: rgba(225, 29, 72, 1); box-shadow: 0 0 15px rgba(225, 29, 72, 0.5); }
+            50% { border-color: rgba(225, 29, 72, 1); box-shadow: 0 0 10px rgba(225, 29, 72, 0.5); }
             100% { border-color: rgba(225, 29, 72, 0.2); box-shadow: 0 0 0 rgba(225, 29, 72, 0); }
         }
 
-        /* --- السلايدر --- */
+        /* --- السلايدر (تصغير) --- */
         .slider-container { 
-            overflow: hidden; white-space: nowrap; position: relative; padding: 15px 0; 
+            overflow: hidden; white-space: nowrap; position: relative; padding: 10px 0; 
             mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
             -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
         }
         .slider-track { display: inline-block; animation: scroll 60s linear infinite; will-change: transform; }
         .slider-item {
-            display: inline-block; width: 220px; height: 300px; margin: 0 8px;
-            border-radius: 12px; overflow: hidden; border: 2px solid #e11d48;
+            display: inline-block; width: 180px; height: 250px; /* تصغير حجم الصور */
+            margin: 0 6px;
+            border-radius: 10px; overflow: hidden; border: 2px solid #e11d48;
             transition: transform 0.3s; position: relative; cursor: pointer;
         }
-        .slider-item:hover { transform: scale(1.02); z-index: 10; }
         .slider-item img { width: 100%; height: 100%; object-fit: cover; }
         
         html[dir="rtl"] .slider-track { animation: scrollRTL 60s linear infinite; }
@@ -151,9 +165,9 @@
             display: flex; align-items: center; justify-content: center;
         }
 
-        /* --- كروت الحب --- */
+        /* --- كروت الحب (تصغير) --- */
         .flip-card {
-            background-color: transparent; width: 100%; height: 130px;
+            background-color: transparent; width: 100%; height: 110px; /* تصغير الارتفاع */
             perspective: 1000px; cursor: pointer;
         }
         .flip-card-inner {
@@ -164,42 +178,40 @@
         .flip-card-front, .flip-card-back {
             position: absolute; width: 100%; height: 100%;
             -webkit-backface-visibility: hidden; backface-visibility: hidden;
-            border-radius: 12px; display: flex; align-items: center; justify-content: center; padding: 8px;
+            border-radius: 12px; display: flex; align-items: center; justify-content: center; padding: 5px;
         }
         .flip-card-front {
             background: linear-gradient(45deg, #e11d48, #ff9a9e);
-            color: white; font-weight: bold; font-size: 1rem;
+            color: white; font-weight: bold; font-size: 0.9rem;
             border: 1px solid rgba(255,255,255,0.1);
         }
         .flip-card-back {
             background: linear-gradient(to bottom, #9f1239, #500724); 
             color: #ffe4e6;
             transform: rotateY(180deg);
-            font-family: 'Marck Script', cursive; font-size: 1.3rem;
+            font-family: 'Marck Script', cursive; font-size: 1.2rem;
             border: 2px solid #fb7185; padding: 5px;
         }
 
-        /* --- نافذة الرسالة (تم إزالة الخلفية السوداء) --- */
+        /* --- نافذة الرسالة (تحميل مسبق للصورة) --- */
         .modal {
             display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%;
-            /* تم إزالة الخلفية السوداء والضباب */
             background-color: transparent; 
             backdrop-filter: none;
             align-items: center; justify-content: center;
-            /* إضافة pointer-events لضمان أن النقر خارج الرسالة يغلقها إذا أردت، 
-               أو لضمان أن الخلفية لا تتفاعل. هنا سنجعلها تغطي الشاشة لكن شفافة */
         }
         .paper {
+            /* الصورة محملة مسبقاً في الـ head */
             background-image: url('https://images.pexels.com/photos/3266703/pexels-photo-3266703.jpeg?auto=compress&cs=tinysrgb&w=600');
             background-size: cover;
             background-position: center;
             color: #ffe4e6;
-            width: 85%; max-width: 350px;
-            padding: 40px 20px 20px 20px;
+            width: 85%; max-width: 320px; /* تصغير العرض */
+            padding: 35px 20px 20px 20px;
             border-radius: 15px; 
             border: 2px solid #fb7185;
             box-shadow: 0 0 30px rgba(159, 18, 57, 0.4);
-            font-family: 'Marck Script', cursive; font-size: 1.4rem; line-height: 1.6;
+            font-family: 'Marck Script', cursive; font-size: 1.3rem; line-height: 1.5;
             position: relative; transform: rotate(-1deg);
             overflow: hidden;
         }
@@ -211,16 +223,16 @@
         .paper * { position: relative; z-index: 1; }
 
         .paper-close {
-            position: absolute; top: 10px; right: 15px;
-            font-family: sans-serif; font-size: 24px; cursor: pointer; color: #fff;
-            background: rgba(0,0,0,0.3); width: 30px; height: 30px; border-radius: 50%;
+            position: absolute; top: 8px; right: 12px;
+            font-family: sans-serif; font-size: 22px; cursor: pointer; color: #fff;
+            background: rgba(0,0,0,0.3); width: 28px; height: 28px; border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
         }
 
         /* --- الفيديو --- */
         .video-wrapper {
-            position: relative; width: 100%; max-width: 600px; height: 60vh;
-            margin: 0 auto 2rem auto; border-radius: 15px; overflow: hidden;
+            position: relative; width: 100%; max-width: 600px; height: 50vh; /* تصغير الارتفاع */
+            margin: 0 auto 1.5rem auto; border-radius: 15px; overflow: hidden;
             box-shadow: 0 5px 20px rgba(225, 29, 72, 0.3); border: 1px solid #e11d48; background-color: #000;
         }
         .video-wrapper video { width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -230,8 +242,8 @@
             cursor: pointer; transition: opacity 0.3s; z-index: 2;
         }
         .play-icon {
-            font-size: 3rem; color: #fff; background: rgba(225, 29, 72, 0.8);
-            border-radius: 50%; width: 60px; height: 60px; display: flex;
+            font-size: 2.5rem; color: #fff; background: rgba(225, 29, 72, 0.8);
+            border-radius: 50%; width: 50px; height: 50px; display: flex;
             justify-content: center; align-items: center; box-shadow: 0 0 15px #e11d48;
             animation: pulse 2s infinite;
         }
@@ -240,7 +252,7 @@
         /* الموسيقى */
         .music-btn {
             position: fixed; bottom: 20px; left: 20px; z-index: 50;
-            background: rgba(225, 29, 72, 0.8); width: 45px; height: 45px;
+            background: rgba(225, 29, 72, 0.8); width: 40px; height: 40px;
             border-radius: 50%; display: flex; align-items: center; justify-content: center;
             cursor: pointer; box-shadow: 0 0 10px rgba(225, 29, 72, 0.6);
             transition: all 0.3s; animation: pulse-btn 2s infinite;
@@ -255,6 +267,9 @@
 </head>
 <body class="antialiased">
 
+    <!-- 3. الخلفية المثبتة (Fixed Background) -->
+    <div id="fixed-background"></div>
+
     <!-- عارض الصور -->
     <div id="lightbox">
         <div id="lightbox-close" onclick="closeLightbox()">&times;</div>
@@ -264,10 +279,11 @@
     <!-- 1. شاشة الدخول -->
     <div id="login-screen">
         <div class="relative z-10 flex flex-col items-center w-full">
-            <i class="fas fa-heart text-rose-500 text-5xl mb-6 animate-pulse drop-shadow-lg"></i>
-            <h2 class="text-xl text-white font-bold mb-8 drop-shadow-md">كلمة السر هي تاريخنا ❤️</h2>
-            <input type="password" id="pass-input" inputmode="numeric" pattern="[0-9]*" class="input-glass" placeholder="DDMMYYYY" maxlength="8">
-            <button onclick="checkPassword()" class="mt-4 px-8 py-2 bg-gradient-to-r from-rose-600 to-pink-600 text-white rounded-full font-bold shadow-lg transform transition active:scale-95 text-sm border border-white/20">
+            <i class="fas fa-heart text-rose-500 text-4xl mb-4 animate-pulse drop-shadow-lg"></i>
+            <h2 class="text-lg text-white font-bold mb-6 drop-shadow-md">كلمة السر هي تاريخنا ❤️</h2>
+            <!-- 2. إضافة حدث focus لحل مشكلة الكيبورد -->
+            <input type="password" id="pass-input" inputmode="numeric" pattern="[0-9]*" class="input-glass" placeholder="DDMMYYYY" maxlength="8" onfocus="adjustView()">
+            <button onclick="checkPassword()" class="mt-2 px-8 py-2 bg-gradient-to-r from-rose-600 to-pink-600 text-white rounded-full font-bold shadow-lg transform transition active:scale-95 text-sm border border-white/20">
                 دخول
             </button>
             <p id="error-msg" class="text-rose-300 mt-4 text-xs hidden font-bold drop-shadow-md">التاريخ غلط.. فكري تاني 😉</p>
@@ -298,7 +314,7 @@
 
         <main class="relative z-10 w-full min-h-screen flex flex-col items-center pb-20">
             
-            <section class="text-center pt-12 px-4 mb-8 w-full">
+            <section class="text-center pt-10 px-4 mb-6 w-full">
                 
                 <div class="year-badge">
                    <span class="text-rose-500 font-bold">من 2025</span>
@@ -306,19 +322,19 @@
                    <span class="text-rose-500 font-bold animate-pulse">إلى 2026 سوا</span>
                 </div>
 
-                <h1 class="text-4xl md:text-6xl font-bold mb-2 font-english text-rose-500">Happy New Year</h1>
+                <h1 class="text-3xl md:text-5xl font-bold mb-2 font-english text-rose-500">Happy New Year</h1>
                 
                 <div class="w-full flex justify-center items-center">
-                    <h2 class="text-4xl md:text-6xl font-bold mb-4 gradient-text text-center w-full">
-                        Aya <i class="fa-solid fa-heart text-red-600 animate-bounce inline-block text-2xl"></i>
+                    <h2 class="text-3xl md:text-5xl font-bold mb-3 gradient-text text-center w-full">
+                        Aya <i class="fa-solid fa-heart text-red-600 animate-bounce inline-block text-xl"></i>
                     </h2>
                 </div>
 
-                <p class="text-lg md:text-xl text-gray-300 max-w-xs mx-auto leading-relaxed">
+                <p class="text-base md:text-lg text-gray-300 max-w-xs mx-auto leading-relaxed">
                     كل سنة وانتي معايا، كل سنة وانتي أجمل حاجة حصلت في حياتي.
                 </p>
                 
-                <button onclick="openModal()" class="mt-6 px-6 py-2 bg-gradient-to-r from-rose-500 to-pink-500 rounded-full text-white font-bold shadow-lg hover:shadow-rose-500/50 transform hover:scale-105 transition duration-300 text-sm">
+                <button onclick="openModal()" class="mt-5 px-6 py-2 bg-gradient-to-r from-rose-500 to-pink-500 rounded-full text-white font-bold shadow-lg hover:shadow-rose-500/50 transform hover:scale-105 transition duration-300 text-sm">
                     <i class="fas fa-envelope-open-text ml-2"></i> رسالة خاصة ليكي
                 </button>
             </section>
@@ -338,62 +354,62 @@
             </div>
 
             <!-- قسم العداد -->
-            <section class="w-full max-w-4xl px-4 mb-12">
-                <div class="glass-card p-6 text-center">
-                    <h3 class="text-xl font-bold text-rose-400 mb-3">بداية حكايتنا</h3>
-                    <p class="text-sm text-gray-300 mb-4 leading-relaxed">
+            <section class="w-full max-w-4xl px-4 mb-10">
+                <div class="glass-card p-5 text-center">
+                    <h3 class="text-lg font-bold text-rose-400 mb-2">بداية حكايتنا</h3>
+                    <p class="text-xs text-gray-300 mb-3 leading-relaxed">
                         في يوم <span class="font-bold text-white">23/11/2025</span> الساعة <span class="font-bold text-white">3:20</span>
                         <br>اللحظة اللي غيرت كل حاجة لما اعترفتي بحبك ليا.. ومن هنا بدأ العمر يحلو.
                     </p>
                     
                     <div class="grid grid-cols-4 gap-2 text-center" id="counter">
                         <div class="bg-black/30 p-2 rounded-lg border border-rose-500/30">
-                            <span class="block text-xl font-bold text-white" id="days">0</span>
+                            <span class="block text-lg font-bold text-white" id="days">0</span>
                             <span class="text-xs text-rose-300">يوم</span>
                         </div>
                         <div class="bg-black/30 p-2 rounded-lg border border-rose-500/30">
-                            <span class="block text-xl font-bold text-white" id="hours">0</span>
+                            <span class="block text-lg font-bold text-white" id="hours">0</span>
                             <span class="text-xs text-rose-300">ساعة</span>
                         </div>
                         <div class="bg-black/30 p-2 rounded-lg border border-rose-500/30">
-                            <span class="block text-xl font-bold text-white" id="minutes">0</span>
+                            <span class="block text-lg font-bold text-white" id="minutes">0</span>
                             <span class="text-xs text-rose-300">دقيقة</span>
                         </div>
                         <div class="bg-black/30 p-2 rounded-lg border border-rose-500/30">
-                            <span class="block text-xl font-bold text-white" id="seconds">0</span>
+                            <span class="block text-lg font-bold text-white" id="seconds">0</span>
                             <span class="text-xs text-rose-300">ثانية</span>
                         </div>
                     </div>
-                    <p id="future-msg" class="mt-4 text-xs text-yellow-400 hidden">لسه التاريخ مجاش.. بنجهز للبداية 😉</p>
-                    <p id="past-msg" class="mt-4 text-xs text-gray-400 hidden">بنحب بعض بقالنا...</p>
+                    <p id="future-msg" class="mt-3 text-xs text-yellow-400 hidden">لسه التاريخ مجاش.. بنجهز للبداية 😉</p>
+                    <p id="past-msg" class="mt-3 text-xs text-gray-400 hidden">بنحب بعض بقالنا...</p>
                 </div>
             </section>
 
             <!-- قسم كروت الحب -->
-            <section class="w-full max-w-4xl px-4 mb-16">
-                <h3 class="text-center text-2xl font-bold text-rose-400 mb-6">ليه بحبك؟ <span class="text-xs text-gray-400 block mt-1">(اضغطي على الكارت)</span></h3>
+            <section class="w-full max-w-4xl px-4 mb-12">
+                <h3 class="text-center text-xl font-bold text-rose-400 mb-4">ليه بحبك؟ <span class="text-xs text-gray-400 block mt-1">(اضغطي على الكارت)</span></h3>
                 <div class="grid grid-cols-2 gap-3">
                     <div class="flip-card" onclick="this.classList.toggle('flipped')">
                         <div class="flip-card-inner">
-                            <div class="flip-card-front"><i class="fas fa-heart text-xl mb-1 block w-full"></i>السبب الأول</div>
+                            <div class="flip-card-front"><i class="fas fa-heart text-lg mb-1 block w-full"></i>السبب الأول</div>
                             <div class="flip-card-back">عشان حنيتك عليا</div>
                         </div>
                     </div>
                     <div class="flip-card" onclick="this.classList.toggle('flipped')">
                         <div class="flip-card-inner">
-                            <div class="flip-card-front"><i class="fas fa-star text-xl mb-1 block w-full"></i>السبب التاني</div>
+                            <div class="flip-card-front"><i class="fas fa-star text-lg mb-1 block w-full"></i>السبب التاني</div>
                             <div class="flip-card-back">عشان بتفهميني من عيني</div>
                         </div>
                     </div>
                     <div class="flip-card" onclick="this.classList.toggle('flipped')">
                         <div class="flip-card-inner">
-                            <div class="flip-card-front"><i class="fas fa-smile text-xl mb-1 block w-full"></i>السبب التالت</div>
+                            <div class="flip-card-front"><i class="fas fa-smile text-lg mb-1 block w-full"></i>السبب التالت</div>
                             <div class="flip-card-back">ضحكتك اللي بتنور يومي</div>
                         </div>
                     </div>
                     <div class="flip-card" onclick="this.classList.toggle('flipped')">
                         <div class="flip-card-inner">
-                            <div class="flip-card-front"><i class="fas fa-infinity text-xl mb-1 block w-full"></i>السبب الرابع</div>
+                            <div class="flip-card-front"><i class="fas fa-infinity text-lg mb-1 block w-full"></i>السبب الرابع</div>
                             <div class="flip-card-back">عشان إنتي Aya</div>
                         </div>
                     </div>
@@ -401,8 +417,8 @@
             </section>
 
             <!-- السلايدر -->
-            <section class="w-full mb-16 overflow-hidden">
-                <h3 class="text-center text-2xl font-bold text-rose-400 mb-6">ذكرياتنا</h3>
+            <section class="w-full mb-12 overflow-hidden">
+                <h3 class="text-center text-xl font-bold text-rose-400 mb-4">ذكرياتنا</h3>
                 <div class="slider-container">
                     <div class="slider-track" id="slider-track">
                         <div class="slider-item" onclick="openLightbox(this.querySelector('img').src)">
@@ -423,7 +439,7 @@
 
             <!-- الفيديوهات -->
             <section class="w-full max-w-4xl px-4">
-                <h3 class="text-center text-2xl font-bold text-rose-400 mb-6">فيديوهاتنا</h3>
+                <h3 class="text-center text-xl font-bold text-rose-400 mb-4">فيديوهاتنا</h3>
                 <div class="video-wrapper group">
                     <video id="video1" playsinline loop preload="metadata">
                         <source src="https://raw.githubusercontent.com/shehabt1000-boop/Moussa/795184b0ad13dd537fd64eb6208a05774bb399d1/lv_0_%D9%A2%D9%A0%D9%A2%D9%A5%D9%A1%D9%A2%D9%A0%D9%A2%D9%A0%D9%A1%D9%A0%D9%A1%D9%A3%D9%A2.mp4#t=0.1" type="video/mp4">
@@ -453,12 +469,19 @@
     <script>
         const START_DATE_STRING = "2025-11-23T03:20:00"; 
 
+        // 2. دالة لضبط الشاشة عند فتح الكيبورد
+        function adjustView() {
+            // محاولة رفع الشاشة قليلاً
+            setTimeout(() => {
+                window.scrollTo(0, 100);
+            }, 300);
+        }
+
         function checkPassword() {
             const input = document.getElementById('pass-input').value;
             if (input === "23112025") {
                 document.getElementById('pass-input').blur();
                 
-                // إخفاء شاشة الدخول
                 document.getElementById('login-screen').style.opacity = '0';
                 
                 setTimeout(() => {
@@ -467,7 +490,6 @@
                     initSiteContent();
                 }, 500);
 
-                // بعد 3 ثواني (انتهاء التحميل)
                 setTimeout(() => {
                     document.getElementById('loading-screen').style.opacity = '0';
                     setTimeout(() => {
@@ -475,7 +497,6 @@
                         document.getElementById('main-content').classList.remove('hidden-content');
                         setupVideoObserver();
                         
-                        // تشغيل الموسيقى هنا (بعد ظهور الموقع)
                         const audio = document.getElementById('bg-music');
                         audio.play().catch(e => console.log("Audio play failed:", e));
                         document.getElementById('music-icon').className = 'fas fa-pause text-white';
