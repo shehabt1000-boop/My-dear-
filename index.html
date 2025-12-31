@@ -12,32 +12,30 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <link rel="preload" as="image" href="https://raw.githubusercontent.com/shehabt1000-boop/Moussa/3c5822b0deb99157562300b4aefb8ce499b83603/IMG-20251124-WA0051.jpg">
-    <link rel="preload" as="image" href="https://images.pexels.com/photos/3266703/pexels-photo-3266703.jpeg?auto=compress&cs=tinysrgb&w=600">
+    <!-- صورة الرسالة الجديدة (ظرف رومانسي) -->
+    <link rel="preload" as="image" href="https://images.pexels.com/photos/1674049/pexels-photo-1674049.jpeg?auto=compress&cs=tinysrgb&w=600">
 
     <style>
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
-        /* 2. إعدادات الخلفية (الحل النهائي للزوم والتوسع) */
         #fixed-background {
             position: fixed; 
             top: 0; 
             left: 0; 
             width: 100%; 
-            /* 100lvh تعني أطول ارتفاع ممكن للشاشة (تتجاهل شريط العنوان) */
-            height: 100vh; /* للمتصفحات القديمة */
-            height: 100lvh; /* للمتصفحات الحديثة (الحل السحري) */
+            height: 100vh; 
+            height: 100lvh; 
             background-image: url('https://raw.githubusercontent.com/shehabt1000-boop/Moussa/3c5822b0deb99157562300b4aefb8ce499b83603/IMG-20251124-WA0051.jpg');
             background-size: cover;
-            background-position: center top; /* التركيز على الجزء العلوي */
+            background-position: center top; 
             z-index: -10;
             background-repeat: no-repeat;
             pointer-events: none;
         }
 
-        /* 1. الظل بنسبة 0.3 */
         #fixed-background::after {
             content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.3); /* تم الضبط */
+            background: rgba(0, 0, 0, 0.5); 
         }
 
         body {
@@ -214,7 +212,8 @@
             align-items: center; justify-content: center;
         }
         .paper {
-            background-image: url('https://images.pexels.com/photos/3266703/pexels-photo-3266703.jpeg?auto=compress&cs=tinysrgb&w=600');
+            /* 3. خلفية جديدة (ظرف رومانسي) */
+            background-image: url('https://images.pexels.com/photos/1674049/pexels-photo-1674049.jpeg?auto=compress&cs=tinysrgb&w=600');
             background-size: cover;
             background-position: center;
             color: #ffe4e6;
@@ -226,10 +225,12 @@
             font-family: 'Marck Script', cursive; font-size: 1.3rem; line-height: 1.5;
             position: relative; transform: rotate(-1deg);
             overflow: hidden;
+            /* إزالة backdrop-filter من هنا لمنع اللاج */
+            backdrop-filter: none;
         }
         .paper::before {
             content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.6);
+            background: rgba(0, 0, 0, 0.5); /* تغميق خفيف */
             z-index: 0;
         }
         .paper * { position: relative; z-index: 1; }
@@ -241,9 +242,10 @@
             display: flex; align-items: center; justify-content: center;
         }
 
-        /* --- الفيديو --- */
+        /* --- الفيديو (1. زيادة الطول) --- */
         .video-wrapper {
-            position: relative; width: 100%; max-width: 600px; height: 50vh;
+            position: relative; width: 100%; max-width: 600px; 
+            height: 65vh; /* زيادة الارتفاع ليظهر الفيديو كاملاً */
             margin: 0 auto 1.5rem auto; border-radius: 15px; overflow: hidden;
             box-shadow: 0 5px 20px rgba(225, 29, 72, 0.3); border: 1px solid #e11d48; background-color: #000;
         }
@@ -335,9 +337,11 @@
 
                 <h1 class="text-3xl md:text-5xl font-bold mb-2 font-english text-rose-500">Happy New Year</h1>
                 
+                <!-- 2. نقل القلب لليمين (قبل الاسم في RTL) -->
                 <div class="w-full flex justify-center items-center">
-                    <h2 class="text-3xl md:text-5xl font-bold mb-3 gradient-text text-center w-full">
-                        Aya <i class="fa-solid fa-heart text-red-600 animate-bounce inline-block text-xl"></i>
+                    <h2 class="text-3xl md:text-5xl font-bold mb-3 text-center w-full">
+                        <i class="fa-solid fa-heart text-red-600 animate-bounce inline-block text-xl ml-2"></i>
+                        <span class="gradient-text">Aya</span> 
                     </h2>
                 </div>
 
@@ -364,11 +368,11 @@
                 </div>
             </div>
 
-            <!-- قسم العداد (2. تم تصغير العرض والحشو بشكل أكبر) -->
-            <section class="w-[90%] max-w-[280px] px-2 mb-10"> <!-- عرض مخصص للهاتف -->
-                <div class="glass-card p-2 text-center"> <!-- حشو أقل -->
-                    <h3 class="text-base font-bold text-rose-400 mb-2">بداية حكايتنا</h3>
-                    <p class="text-[10px] text-gray-300 mb-3 leading-relaxed">
+            <!-- قسم العداد -->
+            <section class="w-[90%] max-w-[300px] px-2 mb-10">
+                <div class="glass-card p-2 text-center">
+                    <h3 class="text-xl font-bold text-rose-400 mb-2">بداية حكايتنا</h3>
+                    <p class="text-sm text-gray-300 mb-3 leading-relaxed">
                         في يوم <span class="font-bold text-white">23/11/2025</span> الساعة <span class="font-bold text-white">3:20</span>
                         <br>اللحظة اللي غيرت كل حاجة لما اعترفتي بحبك ليا.. ومن هنا بدأ العمر يحلو.
                     </p>
