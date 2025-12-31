@@ -5,46 +5,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Aya & You - Forever</title>
     
-    <!-- إعدادات PWA -->
     <meta name="theme-color" content="#000000">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700;900&family=Great+Vibes&family=Marck+Script&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
-    <!-- التحميل المسبق -->
     <link rel="preload" as="image" href="https://raw.githubusercontent.com/shehabt1000-boop/Moussa/3c5822b0deb99157562300b4aefb8ce499b83603/IMG-20251124-WA0051.jpg">
     <link rel="preload" as="image" href="https://images.pexels.com/photos/3266703/pexels-photo-3266703.jpeg?auto=compress&cs=tinysrgb&w=600">
 
     <style>
-        /* --- الأساسيات --- */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
-        /* 4. حل مشكلة ثبات الخلفية والزوم */
+        /* 3. الخلفية المثبتة (بدون ظل أسود) */
         #fixed-background {
             position: fixed; 
             top: 0; 
             left: 0; 
             width: 100%; 
-            height: 100%; /* استخدام % أفضل للثبات */
+            /* الارتفاع سيتم ضبطه بالجافاسكريبت لمنع الزوم */
+            height: 100vh; 
             background-image: url('https://raw.githubusercontent.com/shehabt1000-boop/Moussa/3c5822b0deb99157562300b4aefb8ce499b83603/IMG-20251124-WA0051.jpg');
             background-size: cover;
             background-position: center;
             z-index: -10;
-            /* منع تكرار الخلفية */
             background-repeat: no-repeat;
-        }
-        
-        /* طبقة التغميق */
-        #fixed-background::after {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.75);
+            /* تم إزالة ::after الذي كان يسبب الظل الأسود */
         }
 
         body {
             font-family: 'Cairo', sans-serif;
-            /* 3. حل مشكلة الجزء الأبيض بجعل الخلفية سوداء */
-            background-color: #000000; 
+            background-color: #000000; /* لمنع ظهور اللون الأبيض عند السحب */
             color: #fff;
             overflow-x: hidden;
             position: relative;
@@ -56,20 +47,14 @@
         .font-english { font-family: 'Great Vibes', cursive; }
         .font-handwriting { font-family: 'Marck Script', cursive; }
 
-        /* --- شاشات الدخول والتحميل --- */
+        /* --- شاشات الدخول والتحميل (بدون ظل) --- */
         #login-screen, #loading-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 9999;
             background: transparent;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             transition: opacity 0.5s ease-out;
-        }
-        
-        /* طبقة تغميق إضافية لشاشة الدخول */
-        #login-screen::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: -1;
+            /* تم إزالة ::before الذي كان يسبب الظل */
         }
 
         /* --- أيقونة التحميل --- */
@@ -79,7 +64,7 @@
         }
         .spinner-ring {
             position: absolute; width: 100%; height: 100%;
-            border: 3px solid rgba(255, 255, 255, 0.1);
+            border: 3px solid rgba(255, 255, 255, 0.3); /* زيادة الوضوح قليلاً */
             border-top: 3px solid #e11d48;
             border-radius: 50%;
             animation: spin 1s linear infinite;
@@ -93,15 +78,21 @@
 
         /* --- حقل الإدخال --- */
         .input-glass {
-            background: rgba(255, 255, 255, 0.15);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.2); /* زيادة الشفافية قليلاً لتعويض غياب الظل */
+            border: 1px solid rgba(255, 255, 255, 0.5);
             color: white; padding: 12px; border-radius: 50px;
             text-align: center; font-size: 1.2rem; letter-spacing: 2px;
             width: 75%; max-width: 200px; outline: none; margin-bottom: 20px;
             backdrop-filter: none; 
             transition: border-color 0.3s;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5); /* ظل للنص عشان يبان فوق الصورة الفاتحة */
         }
-        .input-glass:focus { border-color: #fb7185; background: rgba(255,255,255,0.25); }
+        .input-glass:focus { border-color: #fb7185; background: rgba(255,255,255,0.3); }
+        
+        /* تحسين قراءة النصوص فوق الخلفية الفاتحة */
+        h1, h2, p, span, button {
+            text-shadow: 0 2px 10px rgba(0,0,0,0.7); /* ظل قوي للنصوص */
+        }
 
         .hidden-content { display: none !important; }
 
@@ -112,7 +103,7 @@
         }
         .heart {
             position: absolute; font-size: 1rem;
-            color: rgba(229, 62, 62, 0.7);
+            color: rgba(229, 62, 62, 0.8);
             will-change: transform, opacity; animation-name: fall;
             animation-timing-function: linear; animation-fill-mode: forwards;
         }
@@ -123,17 +114,17 @@
 
         /* --- الكروت الزجاجية --- */
         .glass-card {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.4); /* خلفية داكنة للكروت عشان الكلام يبان */
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 15px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
         }
 
         /* --- شارة السنوات --- */
         .year-badge {
             display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-            background: rgba(0, 0, 0, 0.3); 
+            background: rgba(0, 0, 0, 0.5); 
             padding: 6px 16px; border-radius: 50px;
             margin-bottom: 30px; font-size: 0.85rem;
             border: 1px solid rgba(225, 29, 72, 0.5);
@@ -291,7 +282,7 @@
         <div class="relative z-10 flex flex-col items-center w-full">
             <i class="fas fa-heart text-rose-500 text-4xl mb-4 animate-pulse drop-shadow-lg"></i>
             <h2 class="text-lg text-white font-bold mb-6 drop-shadow-md">كلمة السر هي تاريخنا ❤️</h2>
-            <input type="password" id="pass-input" inputmode="numeric" pattern="[0-9]*" class="input-glass" placeholder="DDMMYYYY" maxlength="8">
+            <input type="password" id="pass-input" inputmode="numeric" pattern="[0-9]*" class="input-glass" placeholder="DDMMYYYY" maxlength="8" onfocus="adjustView()">
             <button onclick="checkPassword()" class="mt-2 px-8 py-2 bg-gradient-to-r from-rose-600 to-pink-600 text-white rounded-full font-bold shadow-lg transform transition active:scale-95 text-sm border border-white/20">
                 دخول
             </button>
@@ -362,35 +353,35 @@
                 </div>
             </div>
 
-            <!-- قسم العداد (2. تم تصغير العرض والحشو) -->
-            <section class="w-full max-w-sm px-4 mb-10"> <!-- max-w-sm لتقليل العرض -->
-                <div class="glass-card p-4 text-center">
-                    <h3 class="text-lg font-bold text-rose-400 mb-2">بداية حكايتنا</h3>
-                    <p class="text-xs text-gray-300 mb-3 leading-relaxed">
+            <!-- قسم العداد (2. تم تصغير العرض والحشو بشكل أكبر) -->
+            <section class="w-full max-w-xs px-4 mb-10"> <!-- max-w-xs: عرض صغير جداً للهاتف -->
+                <div class="glass-card p-3 text-center"> <!-- تقليل الحشو العام -->
+                    <h3 class="text-base font-bold text-rose-400 mb-2">بداية حكايتنا</h3>
+                    <p class="text-[10px] text-gray-300 mb-3 leading-relaxed">
                         في يوم <span class="font-bold text-white">23/11/2025</span> الساعة <span class="font-bold text-white">3:20</span>
-                        <br>اللحظة اللي غيرت كل حاجة لما اعترفتي بحبك ليا.. ومن هنا بدأ العمر يحلو.
+                        <br>اللحظة اللي غيرت كل حاجة..
                     </p>
                     
-                    <div class="grid grid-cols-4 gap-1.5 text-center" id="counter"> <!-- gap-1.5 لتقليل المسافات -->
-                        <div class="bg-black/30 py-2 px-1 rounded-lg border border-rose-500/30">
-                            <span class="block text-base font-bold text-white" id="days">0</span> <!-- text-base لتصغير الرقم -->
-                            <span class="text-[10px] text-rose-300">يوم</span>
+                    <div class="grid grid-cols-4 gap-1 text-center" id="counter"> <!-- gap-1 مسافات ضيقة -->
+                        <div class="bg-black/40 py-1.5 px-0.5 rounded border border-rose-500/30">
+                            <span class="block text-sm font-bold text-white" id="days">0</span> <!-- text-sm -->
+                            <span class="text-[9px] text-rose-300">يوم</span>
                         </div>
-                        <div class="bg-black/30 py-2 px-1 rounded-lg border border-rose-500/30">
-                            <span class="block text-base font-bold text-white" id="hours">0</span>
-                            <span class="text-[10px] text-rose-300">ساعة</span>
+                        <div class="bg-black/40 py-1.5 px-0.5 rounded border border-rose-500/30">
+                            <span class="block text-sm font-bold text-white" id="hours">0</span>
+                            <span class="text-[9px] text-rose-300">ساعة</span>
                         </div>
-                        <div class="bg-black/30 py-2 px-1 rounded-lg border border-rose-500/30">
-                            <span class="block text-base font-bold text-white" id="minutes">0</span>
-                            <span class="text-[10px] text-rose-300">دقيقة</span>
+                        <div class="bg-black/40 py-1.5 px-0.5 rounded border border-rose-500/30">
+                            <span class="block text-sm font-bold text-white" id="minutes">0</span>
+                            <span class="text-[9px] text-rose-300">دقيقة</span>
                         </div>
-                        <div class="bg-black/30 py-2 px-1 rounded-lg border border-rose-500/30">
-                            <span class="block text-base font-bold text-white" id="seconds">0</span>
-                            <span class="text-[10px] text-rose-300">ثانية</span>
+                        <div class="bg-black/40 py-1.5 px-0.5 rounded border border-rose-500/30">
+                            <span class="block text-sm font-bold text-white" id="seconds">0</span>
+                            <span class="text-[9px] text-rose-300">ثانية</span>
                         </div>
                     </div>
-                    <p id="future-msg" class="mt-3 text-xs text-yellow-400 hidden">لسه التاريخ مجاش.. بنجهز للبداية 😉</p>
-                    <p id="past-msg" class="mt-3 text-xs text-gray-400 hidden">بنحب بعض بقالنا...</p>
+                    <p id="future-msg" class="mt-2 text-[10px] text-yellow-400 hidden">لسه التاريخ مجاش.. بنجهز للبداية 😉</p>
+                    <p id="past-msg" class="mt-2 text-[10px] text-gray-400 hidden">بنحب بعض بقالنا...</p>
                 </div>
             </section>
 
@@ -485,7 +476,26 @@
             });
         }
 
+        // 3. كود تثبيت الخلفية لمنع الزوم عند اختفاء شريط العنوان
+        function setFixedBackgroundHeight() {
+            const bg = document.getElementById('fixed-background');
+            // نضبط الارتفاع مرة واحدة بناءً على ارتفاع الشاشة الحالي
+            bg.style.height = window.innerHeight + 'px';
+        }
+        
+        // استدعاء الدالة عند التحميل
+        window.addEventListener('load', setFixedBackgroundHeight);
+        // (اختياري) يمكن استدعاؤها عند تغيير اتجاه الشاشة فقط وليس عند التمرير
+        window.addEventListener('orientationchange', () => {
+            setTimeout(setFixedBackgroundHeight, 100);
+        });
+
+
         const START_DATE_STRING = "2025-11-23T03:20:00"; 
+
+        function adjustView() {
+            setTimeout(() => { window.scrollTo(0, 100); }, 300);
+        }
 
         function checkPassword() {
             const input = document.getElementById('pass-input').value;
@@ -504,7 +514,6 @@
                         document.getElementById('main-content').classList.remove('hidden-content');
                         setupVideoObserver();
                         
-                        // 1. حل مشكلة الشاشة المرفوعة: إعادة التمرير للأعلى فوراً
                         window.scrollTo({ top: 0, behavior: 'instant' });
 
                         const audio = document.getElementById('bg-music');
