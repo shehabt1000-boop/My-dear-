@@ -6,14 +6,13 @@
     <title>Aya & You - Forever</title>
     
     <!-- إعدادات PWA -->
-    <meta name="theme-color" content="#0f0f1a">
-    <link rel="manifest" href="manifest.json"> <!-- اختياري لو حبيت تعمل تطبيق -->
-
+    <meta name="theme-color" content="#000000">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700;900&family=Great+Vibes&family=Marck+Script&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
-    <!-- التحميل المسبق للصور -->
+    <!-- التحميل المسبق -->
     <link rel="preload" as="image" href="https://raw.githubusercontent.com/shehabt1000-boop/Moussa/3c5822b0deb99157562300b4aefb8ce499b83603/IMG-20251124-WA0051.jpg">
     <link rel="preload" as="image" href="https://images.pexels.com/photos/3266703/pexels-photo-3266703.jpeg?auto=compress&cs=tinysrgb&w=600">
 
@@ -21,28 +20,31 @@
         /* --- الأساسيات --- */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
-        /* حل مشكلة الخلفية في كروم موبايل باستخدام dvh */
+        /* 4. حل مشكلة ثبات الخلفية والزوم */
         #fixed-background {
             position: fixed; 
             top: 0; 
             left: 0; 
             width: 100%; 
-            height: 100vh; /* Fallback للمتصفحات القديمة */
-            height: 100dvh; /* الحل السحري للموبايل */
+            height: 100%; /* استخدام % أفضل للثبات */
             background-image: url('https://raw.githubusercontent.com/shehabt1000-boop/Moussa/3c5822b0deb99157562300b4aefb8ce499b83603/IMG-20251124-WA0051.jpg');
             background-size: cover;
             background-position: center;
             z-index: -10;
-            transform: translateZ(0); /* تفعيل تسريع الهاردوير لمنع التقطيع */
+            /* منع تكرار الخلفية */
+            background-repeat: no-repeat;
         }
         
+        /* طبقة التغميق */
         #fixed-background::after {
             content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0.75);
         }
 
         body {
             font-family: 'Cairo', sans-serif;
+            /* 3. حل مشكلة الجزء الأبيض بجعل الخلفية سوداء */
+            background-color: #000000; 
             color: #fff;
             overflow-x: hidden;
             position: relative;
@@ -63,9 +65,10 @@
             transition: opacity 0.5s ease-out;
         }
         
+        /* طبقة تغميق إضافية لشاشة الدخول */
         #login-screen::before {
             content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.3);
+            background: rgba(0, 0, 0, 0.5);
             z-index: -1;
         }
 
@@ -288,7 +291,7 @@
         <div class="relative z-10 flex flex-col items-center w-full">
             <i class="fas fa-heart text-rose-500 text-4xl mb-4 animate-pulse drop-shadow-lg"></i>
             <h2 class="text-lg text-white font-bold mb-6 drop-shadow-md">كلمة السر هي تاريخنا ❤️</h2>
-            <input type="password" id="pass-input" inputmode="numeric" pattern="[0-9]*" class="input-glass" placeholder="DDMMYYYY" maxlength="8" onfocus="adjustView()">
+            <input type="password" id="pass-input" inputmode="numeric" pattern="[0-9]*" class="input-glass" placeholder="DDMMYYYY" maxlength="8">
             <button onclick="checkPassword()" class="mt-2 px-8 py-2 bg-gradient-to-r from-rose-600 to-pink-600 text-white rounded-full font-bold shadow-lg transform transition active:scale-95 text-sm border border-white/20">
                 دخول
             </button>
@@ -359,8 +362,8 @@
                 </div>
             </div>
 
-            <!-- قسم العداد (تم تصغير الحجم) -->
-            <section class="w-full max-w-4xl px-4 mb-10">
+            <!-- قسم العداد (2. تم تصغير العرض والحشو) -->
+            <section class="w-full max-w-sm px-4 mb-10"> <!-- max-w-sm لتقليل العرض -->
                 <div class="glass-card p-4 text-center">
                     <h3 class="text-lg font-bold text-rose-400 mb-2">بداية حكايتنا</h3>
                     <p class="text-xs text-gray-300 mb-3 leading-relaxed">
@@ -368,22 +371,22 @@
                         <br>اللحظة اللي غيرت كل حاجة لما اعترفتي بحبك ليا.. ومن هنا بدأ العمر يحلو.
                     </p>
                     
-                    <div class="grid grid-cols-4 gap-2 text-center" id="counter">
-                        <div class="bg-black/30 p-2 rounded-lg border border-rose-500/30">
-                            <span class="block text-lg font-bold text-white" id="days">0</span>
-                            <span class="text-xs text-rose-300">يوم</span>
+                    <div class="grid grid-cols-4 gap-1.5 text-center" id="counter"> <!-- gap-1.5 لتقليل المسافات -->
+                        <div class="bg-black/30 py-2 px-1 rounded-lg border border-rose-500/30">
+                            <span class="block text-base font-bold text-white" id="days">0</span> <!-- text-base لتصغير الرقم -->
+                            <span class="text-[10px] text-rose-300">يوم</span>
                         </div>
-                        <div class="bg-black/30 p-2 rounded-lg border border-rose-500/30">
-                            <span class="block text-lg font-bold text-white" id="hours">0</span>
-                            <span class="text-xs text-rose-300">ساعة</span>
+                        <div class="bg-black/30 py-2 px-1 rounded-lg border border-rose-500/30">
+                            <span class="block text-base font-bold text-white" id="hours">0</span>
+                            <span class="text-[10px] text-rose-300">ساعة</span>
                         </div>
-                        <div class="bg-black/30 p-2 rounded-lg border border-rose-500/30">
-                            <span class="block text-lg font-bold text-white" id="minutes">0</span>
-                            <span class="text-xs text-rose-300">دقيقة</span>
+                        <div class="bg-black/30 py-2 px-1 rounded-lg border border-rose-500/30">
+                            <span class="block text-base font-bold text-white" id="minutes">0</span>
+                            <span class="text-[10px] text-rose-300">دقيقة</span>
                         </div>
-                        <div class="bg-black/30 p-2 rounded-lg border border-rose-500/30">
-                            <span class="block text-lg font-bold text-white" id="seconds">0</span>
-                            <span class="text-xs text-rose-300">ثانية</span>
+                        <div class="bg-black/30 py-2 px-1 rounded-lg border border-rose-500/30">
+                            <span class="block text-base font-bold text-white" id="seconds">0</span>
+                            <span class="text-[10px] text-rose-300">ثانية</span>
                         </div>
                     </div>
                     <p id="future-msg" class="mt-3 text-xs text-yellow-400 hidden">لسه التاريخ مجاش.. بنجهز للبداية 😉</p>
@@ -484,10 +487,6 @@
 
         const START_DATE_STRING = "2025-11-23T03:20:00"; 
 
-        function adjustView() {
-            setTimeout(() => { window.scrollTo(0, 100); }, 300);
-        }
-
         function checkPassword() {
             const input = document.getElementById('pass-input').value;
             if (input === "23112025") {
@@ -504,6 +503,10 @@
                         document.getElementById('loading-screen').style.display = 'none';
                         document.getElementById('main-content').classList.remove('hidden-content');
                         setupVideoObserver();
+                        
+                        // 1. حل مشكلة الشاشة المرفوعة: إعادة التمرير للأعلى فوراً
+                        window.scrollTo({ top: 0, behavior: 'instant' });
+
                         const audio = document.getElementById('bg-music');
                         audio.play().catch(e => console.log("Audio play failed:", e));
                         document.getElementById('music-icon').className = 'fas fa-pause text-white';
